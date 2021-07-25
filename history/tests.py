@@ -41,11 +41,22 @@ class StrModelsTests(TestCase):
 
 
 class DriverViewTests(TestCase):
-    def test_driver_view(self):
+    def test_driver_view_slug(self):
         '''
-        tests if driver details view works correctly
+        tests if driver details view works correctly when using slug identifier in urlconf
+        '''
+        driver = Drivers.objects.create(name="Forename", surname="Surname", nickname="driverref")
+        response = self.client.get(reverse("history:driver_details", args=(driver.nickname, )))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['driver'], driver)
+
+    def test_driver_view_id(self):
+        '''
+        tests if driver details view works correctly when using int identifier in urlconf
         '''
         driver = Drivers.objects.create(name="Forename", surname="Surname", nickname="driverref")
         response = self.client.get(reverse("history:driver_details", args=(driver.id, )))
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context['driver'], driver)
+
+

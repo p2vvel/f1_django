@@ -19,5 +19,5 @@ from . import views
 
 app_name="history"
 urlpatterns = [
-    path('driver/<int:pk>', views.DriverView.as_view(), name="driver_details"),
+    path('driver/<slug:nick>', views.DriverView.as_view(), name="driver_details"),
 ]
