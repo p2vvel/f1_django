@@ -46,6 +46,16 @@
 </ul>
 {%endif%}
 
+{%if teams %}
+
+<ul>
+    {% for k in  teams %}
+        <li>
+            {{k.team}} - {{k.year}}
+        </li>
+    {% endfor %}
+</ul>
+{% endif %}
 
 
 {% endblock content %}

@@ -19,12 +19,14 @@ def create_driver(name, surname, nickname="test_driver", code="TST", number=12, 
     return Drivers.objects.create(name=name, surname=surname, nickname=nickname, code=code, number=number, wiki_url=url)
 
 
-def create_circuit(name, nickname="test_circuit"):
-    return Circuits.objects.create(name=name, nickname=nickname)
+def create_circuit(name, nickname="nickname", url=''):
+    url = name.lower() + '_' + nickname if url=='' else url
+    return Circuits.objects.create(name=name, nickname=nickname, wiki_url=url)
 
 
-def create_constructor(name, nickname="test_constructor"):
-    return Constructors.objects.create(name=name, nickname=nickname)
+def create_constructor(name, nickname="test_constructor", url=''):
+    url = name.lower() + '_' + nickname if url=='' else url
+    return Constructors.objects.create(name=name, nickname=nickname, wiki_url=url)
 
 
 def create_race(circuit, name, date, year=2013, round=7):
@@ -165,3 +167,48 @@ class DriverViewTests(TestCase):
         response = self.client.get(reverse("history:driver_details", args=(driver1.nickname, )))
         self.assertEqual(response.status_code, 200)
         self.assertCountEqual(response.context["related_drivers"], [driver2, driver3])
+
+    def test_driver_teams(self):
+        '''
+        Tests for checking if function finding drivers team is ok
+        '''
+        driver = create_driver(name="John", surname="Doe", nickname="johnnydoodoo")
+        ferrari= create_constructor(name="Ferrari")
+        red_bull= create_constructor(name="Red Bull")
+        aston_martin= create_constructor(name="Aston Martin")
+        circuit1 = create_circuit(name="Monza")
+        circuit2 = create_circuit(name="Nurburgring")
+        status=create_status(status_info="Default status")
+        race1 = create_race(circuit=circuit1, name="Race of Nothing 1", year=2011, round=3, date=timezone.now())
+        race2 = create_race(circuit=circuit2, name="Race of Nothing 2", year=2013, round=2, date=timezone.now())
+        race3 = create_race(circuit=circuit1, name="Race of Nothing 3", year=2014, round=3, date=timezone.now())
+        race4 = create_race(circuit=circuit1, name="Race of Nothing 4", year=2015, round=5, date=timezone.now())
+        race5 = create_race(circuit=circuit1, name="Race of Nothing 5", year=2016, round=12, date=timezone.now())
+        race6 = create_race(circuit=circuit2, name="Race of Nothing 6", year=2016, round=13, date=timezone.now())
+        race7 = create_race(circuit=circuit2, name="Race of Nothing 7", year=2017, round=11, date=timezone.now())
+        results1 = create_result(race=race1, driver=driver, constructor=ferrari, status=status)        
+        results2 = create_result(race=race2, driver=driver, constructor=red_bull, status=status)        
+        results3 = create_result(race=race3, driver=driver, constructor=red_bull, status=status)        
+        results4 = create_result(race=race4, driver=driver, constructor=red_bull, status=status)        
+        results5 = create_result(race=race5, driver=driver, constructor=aston_martin, status=status)        
+        results5 = create_result(race=race6, driver=driver, constructor=ferrari, status=status)        
+        results5 = create_result(race=race7, driver=driver, constructor=aston_martin, status=status)        
+        
+        #second driver for better testing
+        driver2 = create_driver(name="Gregor", surname="Florida", nickname="jersey")
+        results11 = create_result(race=race1, driver=driver2, constructor=aston_martin, status=status)        
+        results22 = create_result(race=race2, driver=driver2, constructor=ferrari, status=status)        
+        results33 = create_result(race=race3, driver=driver2, constructor=red_bull, status=status)        
+
+
+        response = self.client.get(reverse("history:driver_details", args=(driver.nickname, )))
+        self.assertEqual(response.status_code, 200)
+        self.maxDiff = None
+        self.assertCountEqual(response.context["teams"], [
+            {"team": ferrari, "year": 2011}, 
+            {"team": red_bull, "year": 2013}, 
+            {"team": red_bull, "year": 2014}, 
+            {"team": red_bull, "year": 2015}, 
+            {"team": aston_martin, "year": 2016}, 
+            {"team": ferrari, "year": 2016},
+            {"team": aston_martin, "year": 2017}])
