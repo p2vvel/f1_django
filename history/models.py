@@ -168,8 +168,15 @@ class Races(models.Model):
     time = models.TimeField(blank=True, null=True)
     wiki_url = models.CharField(unique=True, max_length=255, blank=True, null=True)
 
+    def __str__(self):
+        if self.circuit and self.circuit.name:
+            return "{round}#{year} {circuit}".format(circuit=self.circuit, year=self.year, round=self.round)
+        else:
+            return "{}#{}".format(self.round, self.year)
+
     class Meta:
         db_table = 'races'
+    
 
 
 class Results(models.Model):

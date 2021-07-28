@@ -24,6 +24,28 @@
     <p>Nationality: {{driver.nationality}} </p>
 {% endif %}
 
+{% comment %} TODO: links to races sites {% endcomment %}
+{% if first_race %}
+    <p>First race: {{first_race }}
+{% endif %}
+
+{% if last_race %}
+    <p>Last race: {{last_race }}
+{% endif %}
+
+{% if related_drivers %}
+<h3>Related drivers:</h3>
+<ul>
+{% for k in related_drivers %}
+    <li>
+        <a href= {% url 'history:driver_details' nick=k.nickname %}>
+            {{k.name}} {{k.surname}}
+        </a>
+    </li>
+{% endfor %}
+</ul>
+{%endif%}
+
 
 
 {% endblock content %}
