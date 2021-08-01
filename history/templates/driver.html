@@ -47,11 +47,11 @@
 {%endif%}
 
 {%if teams %}
-
+<h3>Teams:</h3>
 <ul>
     {% for k in  teams %}
         <li>
-            {{k.team}} - {{k.year}}
+            <a href = {% url 'history:constructor_details' nick=k.team.nickname %}>{{k.team}}</a> - {{k.year}}
         </li>
     {% endfor %}
 </ul>

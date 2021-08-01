@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+
+<p>Constructor site test</p>
+{{constructor}}
+
+{% comment %} seasons, drivers, standing {% endcomment %}
+
+
+{% if drivers %}
+<h3>Drivers</h3>
+<ul>
+    {% for index, value in drivers.items %}
+        <li>
+        {{index}} - 
+        {% for k in value %}
+            {% if forloop.last %}
+                <a href = {% url 'history:driver_details' nick=k.nickname %}>{{k.name}} {{k.surname}}</a> 
+            {% else %}
+                <a href = {% url 'history:driver_details' nick=k.nickname %}>{{k.name}} {{k.surname}}</a>, 
+            {% endif %}
+        {% endfor %}
+        </li>
+    {% endfor %}
+</ul>
+{% endif %}
+
+
+{% endblock content %}
