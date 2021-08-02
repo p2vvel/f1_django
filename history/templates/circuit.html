@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+
+<h3>{{circuit}}</h3>
+
+{% if races %}
+    <ul>
+    {% for year, races_ in races %}
+        <li>
+            {{year}}
+            {% for race in races_ %}
+                {% if forloop.last %}
+                    {{race}}
+                {% else %}
+                    {{race}}, 
+                {% endif %}
+            {% endfor %}
+        </li>
+    {% endfor %}
+    </ul>
+{% endif %}
+
+{% endblock content %}
