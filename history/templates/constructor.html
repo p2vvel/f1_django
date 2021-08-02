@@ -3,19 +3,15 @@
 
 {% block content %}
 
-<p>Constructor site test</p>
-{{constructor}}
-
-{% comment %} seasons, drivers, standing {% endcomment %}
-
+<h3>{{constructor}}</h3>
 
 {% if drivers %}
 <h3>Drivers</h3>
 <ul>
-    {% for index, value in drivers.items %}
+    {% for year, drivers in drivers %}
         <li>
-        {{index}} - 
-        {% for k in value %}
+        {{year}} - 
+        {% for k in drivers %}
             {% if forloop.last %}
                 <a href = {% url 'history:driver_details' nick=k.nickname %}>{{k.name}} {{k.surname}}</a> 
             {% else %}

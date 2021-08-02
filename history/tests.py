@@ -342,5 +342,3 @@ class ConstructorViewTests(TestCase):
         response = self.client.get(reverse('history:constructor_details', args=(constructor.nickname,)))
         self.assertEqual(response.status_code, 200)
         self.assertCountEqual(response.context["drivers"], expected_result)
-        # for k in response.context['drivers']:
-            # self.assertCountEqual(response.context['drivers'][k], expected_result[k])

@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.shortcuts import get_object_or_404
 from django.template import context
+from django.urls.base import reverse
 
 
 # Create your views here.
@@ -12,7 +13,7 @@ def group_elements(data, index_key = lambda x: x[0], value_key = lambda x: x[1])
     result = {k:[] for k in indexes}
     for k in data:
         result[index_key(k)].append(value_key(k))
-    return result.items()
+    return list(result.items())
 
 
 
@@ -59,6 +60,8 @@ class DriverView(generic.DetailView):
                 k["constructor"] = Constructors.objects.get(pk=k["constructor"])
             temp = group_elements(temp, index_key=lambda x: x["race__year"], value_key=lambda x: x["constructor"])
             
+            temp.sort(key=lambda x: x[0], reverse=True)
+            
             context["teams"] = temp
         except Exception as e:
             print("ERROR: %s" % e)
@@ -78,15 +81,11 @@ class ConstructorView(generic.DetailView):
         context = super().get_context_data(**kwargs)
         my_constructor = context["constructor"]
         try:
-            # temp = [(k.driver, k.race.year) for k in Results.objects.filter(constructor=my_constructor)]
-            # temp = list(set(temp))  # unikalne pary (kierowca, rok)
-            # temp = group_elements(temp, index_key=lambda x: x[1], value_key=lambda x: x[0])
-            
             temp = Results.objects.filter(constructor=my_constructor).values("driver", "race__year").distinct()
             for k in temp:
                 k["driver"] = Drivers.objects.get(pk=k["driver"])
             temp = group_elements(temp, index_key=lambda x: x["race__year"], value_key=lambda x: x["driver"])
-
+            temp.sort(key=lambda x: x[0], reverse=True)
             context['drivers'] = temp
         except Exception as e:
             context['drivers'] = []
