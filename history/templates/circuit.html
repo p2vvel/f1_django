@@ -12,9 +12,9 @@
             {{year}}
             {% for race in races_ %}
                 {% if forloop.last %}
-                    {{race}}
+                    <a href={% url 'history:race_details' pk=race.pk %}>{{race}}</a>
                 {% else %}
-                    {{race}}, 
+                    <a href={% url 'history:race_details' pk=race.pk %}>{{race}}</a>,
                 {% endif %}
             {% endfor %}
         </li>

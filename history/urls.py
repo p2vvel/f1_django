@@ -19,7 +19,9 @@ from . import views
 
 app_name="history"
 urlpatterns = [
-    path('driver/<slug:nick>', views.DriverView.as_view(), name='driver_details'),
-    path('team/<slug:nick>', views.ConstructorView.as_view(), name='constructor_details'),
-    path('circuit/<slug:nick>', views.CircuitView.as_view(), name='circuit_details')
+    path("driver/<slug:nick>", views.DriverView.as_view(), name="driver_details"),
+    path("team/<slug:nick>", views.ConstructorView.as_view(), name="constructor_details"),
+    path("circuit/<slug:nick>", views.CircuitView.as_view(), name="circuit_details"),
+    #easier to find race by id rather than making slugs for every race
+    path("race/<int:pk>", views.RaceView.as_view(), name="race_details")
 ]

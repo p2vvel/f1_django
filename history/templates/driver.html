@@ -26,11 +26,11 @@
 
 {% comment %} TODO: links to races sites {% endcomment %}
 {% if first_race %}
-    <p>First race: {{first_race }}
+    <p>First race: <a href={% url 'history:race_details' pk=first_race.pk %}>{{first_race.year}} {{first_race.name}}</a></p> 
 {% endif %}
 
 {% if last_race %}
-    <p>Last race: {{last_race }}
+    <p>First race: <a href={% url 'history:race_details' pk=last_race.pk %}>{{last_race.year}} {{last_race.name}}</a></p> 
 {% endif %}
 
 {% if related_drivers %}

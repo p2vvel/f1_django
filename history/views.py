@@ -135,3 +135,9 @@ class CircuitView(generic.DetailView):
             context["races"]
 
         return context
+
+
+class RaceView(generic.DetailView):
+    model = Races
+    context_object_name = "race"
+    template_name="race.html"
