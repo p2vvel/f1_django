@@ -51,7 +51,7 @@
 <ul>
     {% for k in  teams %}
         <li>
-            <a href = {% url 'history:constructor_details' nick=k.team.nickname %}>{{k.team}}</a> - {{k.year}}
+            {% comment %} <a href = {% url 'history:constructor_details' nick=k.team.nickname %}>{{k.team}}</a> - {{k.year}} {% endcomment %}
         </li>
     {% endfor %}
 </ul>

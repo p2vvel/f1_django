@@ -49,21 +49,30 @@ class TestGrouping(TestCase):
     def test_grouping_elements(self):
         data = [(2000, 12), (2000, 20), (2000, 2),
                 (2001, 202), (2001, 33), (2004, 0)]
-        expected_result = {2000: [12, 20, 2], 2001: [202, 33], 2004: [0]}
-        self.assertEqual(group_elements(data), expected_result)
+        expected_result = [
+            (2000, [12, 20, 2]), 
+            (2001, [202, 33]), 
+            (2004, [0])]
+        self.assertCountEqual(group_elements(data), expected_result)
 
     def test_different_keys(self):
         data = [("ferrari", 2001),
                 ("red bull", 2002),
                 ("aston martin", 2002),
                 ("ferrari", 2004)]
-        expected_results = {2001: ["ferrari"], 2002: [
-            "red bull", "aston martin"], 2004: ["ferrari"]}
-        expected_results2 = {"ferrari": [2001, 2004], "red bull": [
-            2002], "aston martin": [2002]}
-        self.assertEqual(group_elements(
+        expected_results = [
+            (2001, ["ferrari"]), 
+            (2002, ["red bull", "aston martin"]), 
+            (2004, ["ferrari"])]
+        
+        expected_results2 = [
+            ("ferrari", [2001, 2004]), 
+            ("red bull", [2002]),
+            ("aston martin", [2002])]
+        
+        self.assertCountEqual(group_elements(
             data, index_key=lambda x: x[1], value_key=lambda x: x[0]), expected_results)
-        self.assertEqual(group_elements(
+        self.assertCountEqual(group_elements(
             data, index_key=lambda x: x[0], value_key=lambda x: x[1]), expected_results2)
 
 
@@ -270,14 +279,18 @@ class DriverViewTests(TestCase):
             reverse("history:driver_details", args=(driver.nickname, )))
         self.assertEqual(response.status_code, 200)
         self.maxDiff = None
-        self.assertCountEqual(response.context["teams"], [
-            {"team": ferrari, "year": 2011},
-            {"team": red_bull, "year": 2013},
-            {"team": red_bull, "year": 2014},
-            {"team": red_bull, "year": 2015},
-            {"team": aston_martin, "year": 2016},
-            {"team": ferrari, "year": 2016},
-            {"team": aston_martin, "year": 2017}])
+
+
+        expected_results = [
+            (2011, [ferrari]),
+            (2013, [red_bull]),
+            (2014, [red_bull]),
+            (2015, [red_bull]),
+            (2016, [aston_martin, ferrari]),
+            (2017, [aston_martin])]
+
+        print(response.context["teams"])
+        self.assertCountEqual(response.context["teams"], expected_results)
 
 
 class ConstructorViewTests(TestCase):
@@ -320,14 +333,14 @@ class ConstructorViewTests(TestCase):
         result8 = create_result(race=race4, constructor=constructor, status=status, driver=driver4)
         result9 = create_result(race=race4, constructor=constructor, status=status, driver=driver5)
 
-        expected_result = {
-                        2008: [driver1, driver2],
-                        2009: [driver1, driver2],
-                        2010: [driver2, driver3],
-                        2011: [driver3, driver4, driver5]
-                        }
+        expected_result = [
+                        (2008, [driver1, driver2]),
+                        (2009, [driver1, driver2]),
+                        (2010, [driver2, driver3]),
+                        (2011, [driver3, driver4, driver5])]
 
         response = self.client.get(reverse('history:constructor_details', args=(constructor.nickname,)))
         self.assertEqual(response.status_code, 200)
-        for k in response.context['drivers']:
-            self.assertCountEqual(response.context['drivers'][k], expected_result[k])
+        self.assertCountEqual(response.context["drivers"], expected_result)
+        # for k in response.context['drivers']:
+            # self.assertCountEqual(response.context['drivers'][k], expected_result[k])

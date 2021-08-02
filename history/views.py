@@ -12,7 +12,7 @@ def group_elements(data, index_key = lambda x: x[0], value_key = lambda x: x[1])
     result = {k:[] for k in indexes}
     for k in data:
         result[index_key(k)].append(value_key(k))
-    return result
+    return result.items()
 
 
 
@@ -54,11 +54,11 @@ class DriverView(generic.DetailView):
         # fetching teams data
         try:
             # pobieram wszystkie informacje o rezultatach, gdzie jest jest moje id, wybieram z nich informacje o konstruktorze i roku
-            temp = [(k.constructor, k.race.year)
-                    for k in Results.objects.filter(driver=my_driver)]
-            temp = list(set(temp))  # unikalne pary (konstruktor, rok)
-            temp.sort(key=lambda x: x[1])
-            temp = [{"year": k[1], "team": k[0]} for k in temp]
+            temp = Results.objects.filter(driver=my_driver).values("race__year", "constructor").distinct()
+            for k in temp:
+                k["constructor"] = Constructors.objects.get(pk=k["constructor"])
+            temp = group_elements(temp, index_key=lambda x: x["race__year"], value_key=lambda x: x["constructor"])
+            
             context["teams"] = temp
         except Exception as e:
             print("ERROR: %s" % e)
@@ -78,10 +78,16 @@ class ConstructorView(generic.DetailView):
         context = super().get_context_data(**kwargs)
         my_constructor = context["constructor"]
         try:
-            temp = [(k.driver, k.race.year) for k in Results.objects.filter(constructor=my_constructor)]
-            temp = list(set(temp))  # unikalne pary (kierowca, rok)
-            temp = group_elements(temp, index_key=lambda x: x[1], value_key=lambda x: x[0])
-            context['drivers'] = temp        
+            # temp = [(k.driver, k.race.year) for k in Results.objects.filter(constructor=my_constructor)]
+            # temp = list(set(temp))  # unikalne pary (kierowca, rok)
+            # temp = group_elements(temp, index_key=lambda x: x[1], value_key=lambda x: x[0])
+            
+            temp = Results.objects.filter(constructor=my_constructor).values("driver", "race__year").distinct()
+            for k in temp:
+                k["driver"] = Drivers.objects.get(pk=k["driver"])
+            temp = group_elements(temp, index_key=lambda x: x["race__year"], value_key=lambda x: x["driver"])
+
+            context['drivers'] = temp
         except Exception as e:
             context['drivers'] = []
 
