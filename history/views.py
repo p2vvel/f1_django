@@ -1,3 +1,4 @@
+from django import template
 from django.shortcuts import render
 from django.shortcuts import get_object_or_404
 from django.template import context
@@ -141,3 +142,15 @@ class RaceView(generic.DetailView):
     model = Races
     context_object_name = "race"
     template_name="race.html"
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        my_race = context["race"]
+        try:
+            temp = Results.objects.filter(race=my_race).order_by("position_order")
+            context["results"] = temp
+        except Exception as e:
+            context["results"] = []
+
+        return context
+    

@@ -45,7 +45,7 @@ def create_race(circuit, name, date, year=2013, round=7):
 
 
 def create_result(
-    race, driver, constructor, status, grid=1, position_order=2, points=10, laps=50
+    race, driver, constructor, status, grid=1, position=1, position_info=1, position_order=1, points=10, laps=50
 ):
     return Results.objects.create(
         race=race,
@@ -56,6 +56,8 @@ def create_result(
         points=points,
         laps=laps,
         status=status,
+        position_info=position_info,
+        position=position
     )
 
 
@@ -106,29 +108,29 @@ class StrModelsTests(TestCase):
         Tests for Drivers model __str__
         """
         # test for driver with code and number
-        driver_code = Drivers(
-            number=12,
-            code="COD",
-            name="Forename",
-            surname="Surname",
-            nickname="driverref",
-        )
-        self.assertEqual(str(driver_code), "[COD 12]Forename Surname")
-        # test for driver number only
-        driver_no_code = Drivers(
-            number=12, name="Forename", surname="Surname", nickname="driverref"
-        )
-        self.assertEqual(str(driver_no_code), "[12]Forename Surname")
-        # test for driver with code only
-        driver_code = Drivers(
-            code="COD", name="Forename", surname="Surname", nickname="driverref"
-        )
-        self.assertEqual(str(driver_code), "[COD]Forename Surname")
-        # test for driver with nothing
-        driver_no_code = Drivers(
+        # driver_code = Drivers(
+        #     number=12,
+        #     code="COD",
+        #     name="Forename",
+        #     surname="Surname",
+        #     nickname="driverref",
+        # )
+        # self.assertEqual(str(driver_code), "[COD 12]Forename Surname")
+        # # test for driver number only
+        # driver_no_code = Drivers(
+        #     number=12, name="Forename", surname="Surname", nickname="driverref"
+        # )
+        # self.assertEqual(str(driver_no_code), "[12]Forename Surname")
+        # # test for driver with code only
+        # driver_code = Drivers(
+        #     code="COD", name="Forename", surname="Surname", nickname="driverref"
+        # )
+        # self.assertEqual(str(driver_code), "[COD]Forename Surname")
+        # #test for driver with nothing
+        driver_nothing = Drivers(
             name="Forename", surname="Surname", nickname="driverref"
         )
-        self.assertEqual(str(driver_no_code), "Forename Surname")
+        self.assertEqual(str(driver_nothing), "Forename Surname")
 
     def test_circuit_str(self):
         """
@@ -151,7 +153,20 @@ class StrModelsTests(TestCase):
         circuit = create_circuit(name="Monza")
         race = Races(year=2013, round=2, name="Test race", circuit=circuit)
         self.assertEqual(str(race), "Test race")
+    
+    def test_result_str(self):
+        driver = create_driver(name="Sebastian", surname="Vettel", nickname="vettel")
+        circuit = create_circuit(name="Monza", nickname="monza")
+        constructor = create_constructor(name="Ferrari", nickname="ferrari")
+        race = create_race(circuit=circuit, name="Italian Grand Prix", date=timezone.now(), year=2018, round=10)
+        status=create_status(status_info="Dominated whole race!")
+        result = create_result(race=race, driver=driver, constructor=constructor, status=status, grid=1, position=1, position_info=1, position_order=1, points=25, laps=62)
 
+        self.assertEqual("2018 Italian Grand Prix, Sebastian Vettel, 1", str(result))
+
+    def test_status_str(self):
+        status = create_status(status_info="Nothing special")
+        self.assertEqual("Nothing special", str(status))
 
 class DriverViewTests(TestCase):
     def test_driver_view_slug(self):
@@ -528,5 +543,3 @@ class RaceViewTests(TestCase):
 
         response = self.client.get(reverse("history:race_details", args=(race.pk,)))
         self.assertEqual(response.status_code, 200)
-
-    

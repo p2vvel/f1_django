@@ -20,17 +20,18 @@ class Drivers(models.Model):
     wiki_url = models.CharField(unique=True, max_length=255)
 
     def __str__(self):
-        if self.code or self.number:
-            return (
-                "[{}{}{}]".format(
-                    "%s" % self.code if self.code else "",
-                    " " if self.code and self.number else "",
-                    "%s" % self.number if self.number else "",
-                )
-                + "%s %s" % (self.name, self.surname)
-            )
-        else:
-            return "%s %s" % (self.name, self.surname)
+        return "%s %s" % (self.name, self.surname)
+        # if self.code or self.number:
+        #     return (
+        #         "[{}{}{}]".format(
+        #             "%s" % self.code if self.code else "",
+        #             " " if self.code and self.number else "",
+        #             "%s" % self.number if self.number else "",
+        #         )
+        #         + "%s %s" % (self.name, self.surname)
+        #     )
+        # else:
+        #     return "%s %s" % (self.name, self.surname)
 
     class Meta:
         db_table = "drivers"
@@ -204,8 +205,12 @@ class Results(models.Model):
     )
     status = models.ForeignKey("Status", models.DO_NOTHING, db_column="statusId")
 
+    def __str__(self):
+        return "{race.year} {race.name}, {driver}, {result}".format(race=self.race, driver=self.driver, result=self.position_info)
+
     class Meta:
         db_table = "results"
+    
 
 
 class Seasons(models.Model):
@@ -224,7 +229,7 @@ class Status(models.Model):
     status_info = models.CharField(max_length=255)
 
     def __str__(self):
-        return self.status_test
+        return self.status_info
 
     class Meta:
         db_table = "status"

@@ -1,8 +1,51 @@
 {% extends 'base.html' %}
 
+
+{% load my_tags %}
+
+
 {% block content %}
 
 
 <h3>{{race.year}} {{race.name}}</h3>
+
+
+{% if results %}
+    {% with render_laptimes=results|any_laptime %}
+        <h5>Results:</h5>
+        <table>
+            <tr>
+                <th>No.</th>
+                <th>Driver</th>
+                <th>Constructor</th>
+                <th>Status</th>
+                <th>Position</th>
+                <th>Laps</th>
+                {% if render_laptimes %}
+                    <th>Fastest Lap</th>
+                    <th>Fastest Lap Time</th>
+                    <th>Fastest Lap Ranking</th>
+                {% endif %}
+                <th>Points</th>
+            </tr>
+            {% for k in results %}
+                <tr>
+                    <td>{{k.position_order|default_if_none:"-"}}</td>
+                    <td>{{k.driver}}</td>
+                    <td>{{k.constructor}}</td>
+                    <td>{{k.status|default_if_none:"-"}}</td>
+                    <td>{{k.position|default_if_none:"-"}}</td>
+                    <td>{{k.laps}}</td>
+                    {% if render_laptimes %}
+                        <td>{{k.fastest_lap|default_if_none:"-"}}</td>
+                        <td>{{k.fastest_laptime|default_if_none:"-"}}</td>
+                        <td>{{k.rank|default_if_none:"-"}}</td>
+                    {% endif %}
+                    <td>{{k.points|floatformat}}</td>
+                </tr>
+            {% endfor %}
+        </table>
+    {% endwith %}
+{% endif %}
 
 {% endblock content %}
