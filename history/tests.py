@@ -543,3 +543,31 @@ class RaceViewTests(TestCase):
 
         response = self.client.get(reverse("history:race_details", args=(race.pk,)))
         self.assertEqual(response.status_code, 200)
+    def test_results_data(self):
+        circuit = create_circuit("Monza")
+        race = create_race(circuit=circuit, name="Italian Grand Prix", date=datetime.now(), year=2013, round=7)
+        status = create_status("Finished")
+
+
+        ferrari = create_constructor(name="Ferrari", nickname="ferrari")
+        red_bull= create_constructor(name="Red Bull", nickname="red_bull")
+        
+        vettel = create_driver(name="Sebastian", surname="Vettel", nickname="vettel")
+        webber = create_driver(name="Mark", surname="Webber", nickname="webber")
+        alonso = create_driver(name="Fernando", surname="Alonso", nickname = "alonso")
+        massa = create_driver(name="Felipe",surname="Massa", nickname="massa")
+
+        result1 = create_result(race=race, driver=vettel, constructor=red_bull, status=status, grid=1, position=1, position_info=1, position_order=1, points=25)
+        result2 = create_result(race=race, driver=alonso, constructor=ferrari , status=status, grid=2, position=2, position_info=2, position_order=2, points=18)
+        result3 = create_result(race=race, driver=webber, constructor=red_bull, status=status, grid=3, position=3, position_info=3, position_order=3, points=15)
+        result4 = create_result(race=race, driver=massa, constructor=ferrari  , status=status, grid=4, position=4, position_info=4, position_order=4, points=12)
+
+
+        race2 = create_race(circuit=circuit, name="Italian Grand Prix2", date=datetime.now(), year=2014, round=7)
+        result10 = create_result(race=race2, driver=vettel, constructor=red_bull, status=status, grid=1, position=1, position_info=1, position_order=1, points=25)
+        result20 = create_result(race=race2, driver=webber, constructor=red_bull , status=status, grid=2, position=2, position_info=2, position_order=2, points=18)
+        result30 = create_result(race=race2, driver=alonso, constructor=ferrari, status=status, grid=3, position=3, position_info=3, position_order=3, points=15)
+
+
+        response = self.client.get(reverse("history:race_details", args=(race.pk,)))
+        self.assertEqual(list(response.context["results"]), [result1, result2, result3, result4])
