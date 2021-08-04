@@ -10,7 +10,7 @@ from django.utils import timezone
 
 # Create your tests here.
 
-from .models import Drivers, Circuits, Races, Results, Status, Constructors, Seasons
+from .models import Drivers, Circuits, Qualifying, Races, Results, Status, Constructors, Seasons
 from .views import group_elements
 
 # TODO: models objects generators (driver, constructor, circuit)
@@ -63,6 +63,10 @@ def create_result(
 
 def create_status(status_info):
     return Status.objects.create(status_info=status_info)
+
+
+def create_qualifying(race, driver, constructor, position, number):
+        return Qualifying.objects.create(race=race, driver=driver, constructor=constructor, driver_number=number, position=position)
 
 
 class TestGrouping(TestCase):
@@ -571,3 +575,26 @@ class RaceViewTests(TestCase):
 
         response = self.client.get(reverse("history:race_details", args=(race.pk,)))
         self.assertEqual(list(response.context["results"]), [result1, result2, result3, result4])
+    def test_qualifying_data(self):
+        circuit = create_circuit("Monza")
+        race = create_race(circuit=circuit, name="Italian Grand Prix", date=datetime.now(), year=2013, round=7)
+
+        ferrari = create_constructor(name="Ferrari", nickname="ferrari")
+        red_bull= create_constructor(name="Red Bull", nickname="red_bull")
+        
+        vettel = create_driver(name="Sebastian", surname="Vettel", nickname="vettel")
+        webber = create_driver(name="Mark", surname="Webber", nickname="webber")
+        alonso = create_driver(name="Fernando", surname="Alonso", nickname = "alonso")
+        massa = create_driver(name="Felipe",surname="Massa", nickname="massa")
+
+        quali1 = create_qualifying(race=race, driver=vettel, constructor=red_bull, position=1, number=5)
+        quali2 = create_qualifying(race=race, driver=alonso, constructor=ferrari , position=2, number=5)
+        quali3 = create_qualifying(race=race, driver=webber, constructor=red_bull, position=3, number=5)
+        quali4 = create_qualifying(race=race, driver=massa , constructor=ferrari , position=4, number=5)
+
+
+        response = self.client.get(reverse("history:race_details", args=(race.pk,)))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(list(response.context["qualifying"]), [quali1, quali2, quali3, quali4])
+
+    

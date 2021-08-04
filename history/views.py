@@ -7,7 +7,7 @@ from django.urls.base import reverse
 
 # Create your views here.
 from django.views import generic
-from .models import Circuits, Constructors, Drivers, Races, Results
+from .models import Circuits, Constructors, Drivers, Qualifying, Races, Results
 
 
 def group_elements(data, index_key=lambda x: x[0], value_key=lambda x: x[1]):
@@ -146,11 +146,20 @@ class RaceView(generic.DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         my_race = context["race"]
+        
+        #fetching results data
         try:
             temp = Results.objects.filter(race=my_race).order_by("position_order")
             context["results"] = temp
         except Exception as e:
             context["results"] = []
+
+        #fetching qualifying data
+        try:
+            temp = Qualifying.objects.filter(race=my_race).order_by("position")
+            context["qualifying"] = temp
+        except Exception as e:
+            context["qualifying"] = []
 
         return context
     

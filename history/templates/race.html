@@ -11,40 +11,78 @@
 
 
 {% if results %}
-    {% with render_laptimes=results|any_laptime %}
-        <h5>Results:</h5>
+{% with render_laptimes=results|any_laptime %}
+<h5>Results:</h5>
+<table>
+    <tr>
+        <th>No.</th>
+        <th>Driver</th>
+        <th>Constructor</th>
+        <th>Status</th>
+        <th>Position</th>
+        <th>Laps</th>
+        {% if render_laptimes %}
+        <th>Fastest Lap</th>
+        <th>Fastest Lap Time</th>
+        <th>Fastest Lap Ranking</th>
+        {% endif %}
+        <th>Points</th>
+    </tr>
+    {% for k in results %}
+    <tr>
+        <td>{{k.position_order|default_if_none:"-"}}</td>
+        <td><a href={% url "history:driver_details" nick=k.driver.nickname %}>{{k.driver}}</a></td>
+        <td><a href={% url "history:constructor_details" nick=k.constructor.nickname %}>{{k.constructor}}</a></td>
+        <td>{{k.status|default_if_none:"-"}}</td>
+        <td>{{k.position|default_if_none:"-"}}</td>
+        <td>{{k.laps}}</td>
+        {% if render_laptimes %}
+        
+        <td>{{k.fastest_lap|default_if_none:"-"}}</td>
+        <td>{{k.fastest_laptime|default_if_none:"-"}}</td>
+        <td>{{k.rank|default_if_none:"-"}}</td>
+        {% endif %}
+        <td>{{k.points|floatformat}}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% endwith %}
+{% endif %}
+
+
+{% if qualifying %}
+<h5>Qualifying</h5>
+    {% with render_all_q=qualifying|all_q %}
+    {% with render_only_q1=qualifying|only_q1 %}
         <table>
             <tr>
-                <th>No.</th>
+                <th>Position</th>
                 <th>Driver</th>
                 <th>Constructor</th>
-                <th>Status</th>
-                <th>Position</th>
-                <th>Laps</th>
-                {% if render_laptimes %}
-                    <th>Fastest Lap</th>
-                    <th>Fastest Lap Time</th>
-                    <th>Fastest Lap Ranking</th>
+                {% if render_all_q%}
+                    <th>Q1</th>
+                    <th>Q2</th>
+                    <th>Q3</th>
+                {% elif render_only_q1 %}
+                    <th>Time</th>
                 {% endif %}
-                <th>Points</th>
             </tr>
-            {% for k in results %}
+            {% for k in qualifying %}
                 <tr>
-                    <td>{{k.position_order|default_if_none:"-"}}</td>
-                    <td>{{k.driver}}</td>
-                    <td>{{k.constructor}}</td>
-                    <td>{{k.status|default_if_none:"-"}}</td>
-                    <td>{{k.position|default_if_none:"-"}}</td>
-                    <td>{{k.laps}}</td>
-                    {% if render_laptimes %}
-                        <td>{{k.fastest_lap|default_if_none:"-"}}</td>
-                        <td>{{k.fastest_laptime|default_if_none:"-"}}</td>
-                        <td>{{k.rank|default_if_none:"-"}}</td>
+                    <td>{{k.position}}</td>
+                    <td><a href={% url "history:driver_details" nick=k.driver.nickname %}>{{k.driver}}</a></td>
+                    <td><a href={% url "history:constructor_details" nick=k.constructor.nickname %}>{{k.constructor}}</a></td>
+                    {% if render_all_q %}
+                        <td>{{k.q1|default:"-"}}</td>
+                        <td>{{k.q2|default:"-"}}</td>
+                        <td>{{k.q3|default:"-"}}</td>
+                    {% elif render_only_q1 %}
+                        <td>{{k.q1|default:"-"}}</td>
                     {% endif %}
-                    <td>{{k.points|floatformat}}</td>
                 </tr>
             {% endfor %}
         </table>
+    {% endwith %}
     {% endwith %}
 {% endif %}
 

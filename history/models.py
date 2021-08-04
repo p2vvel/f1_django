@@ -152,7 +152,7 @@ class Qualifying(models.Model):
     constructor = models.ForeignKey(
         Constructors, models.DO_NOTHING, db_column="constructorId"
     )
-    number = models.IntegerField()
+    driver_number = models.IntegerField()
     position = models.IntegerField(blank=True, null=True)
     q1 = models.CharField(max_length=255, blank=True, null=True)
     q2 = models.CharField(max_length=255, blank=True, null=True)
