@@ -222,6 +222,11 @@ class Seasons(models.Model):
 
     class Meta:
         db_table = "seasons"
+    
+
+    def count_races(year):
+        '''Returns number of races in chosen season'''
+        return Races.objects.filter(year=year).aggregate(races_number=models.Max("round"))
 
 
 class Status(models.Model):

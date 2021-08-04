@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>{{season}}</h1>
+
+
+{% if drivers %}
+    <ul>
+        {% for k in drivers %}
+        <li>
+            {{k}}
+        </li>
+        {% endfor %}
+    </ul>
+{% endif %}
+
+
+{% endblock content %}

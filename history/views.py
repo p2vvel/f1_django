@@ -7,15 +7,11 @@ from django.urls.base import reverse
 
 # Create your views here.
 from django.views import generic
-from .models import Circuits, Constructors, Drivers, Qualifying, Races, Results
+from django.views.generic.detail import DetailView
+from .models import Circuits, Constructors, Drivers, Qualifying, Races, Results, Seasons
 
 
-def group_elements(data, index_key=lambda x: x[0], value_key=lambda x: x[1]):
-    indexes = set([index_key(k) for k in data])
-    result = {k: [] for k in indexes}
-    for k in data:
-        result[index_key(k)].append(value_key(k))
-    return list(result.items())
+from .utils import group_elements
 
 
 class DriverView(generic.DetailView):
@@ -160,6 +156,25 @@ class RaceView(generic.DetailView):
             context["qualifying"] = temp
         except Exception as e:
             context["qualifying"] = []
+
+        return context
+    
+
+class SeasonView(DetailView):
+    model = Seasons
+    template_name = "seasons.html"
+    context_object_name = "season"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        my_season = context["season"]
+
+        try:
+            temp = Results.objects.filter(race__year=my_season.year).values("driver").distinct()
+            temp = [Drivers.objects.get(pk=k["driver"]) for k in temp]
+            context["drivers"] = temp
+        except Exception as e:
+            context["drivers"] = []
 
         return context
     
