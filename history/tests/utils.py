@@ -2,7 +2,6 @@
 Contains functions written to make testing app easier
 """
 
-
 from history.models import (
     Drivers,
     Circuits,
@@ -15,16 +14,12 @@ from history.models import (
 )
 
 
-def create_driver(name, surname, nickname="test_driver", code="TST", number=12, url=""):
+#yapf:disable
+def create_driver(name,surname, nickname="test_driver",code="TST",number=12, url=""):
     url = nickname if url == "" else url
-    return Drivers.objects.create(
-        name=name,
-        surname=surname,
-        nickname=nickname,
-        code=code,
-        number=number,
-        wiki_url=url,
-    )
+    return Drivers.objects.create(name=name,surname=surname,nickname=nickname,
+                                    code=code,number=number,wiki_url=url)
+#yapf:enable
 
 
 def create_circuit(name, nickname="nickname", url=""):
@@ -34,39 +29,26 @@ def create_circuit(name, nickname="nickname", url=""):
 
 def create_constructor(name, nickname="test_constructor", url=""):
     url = name.lower() + "_" + nickname if url == "" else url
-    return Constructors.objects.create(name=name, nickname=nickname, wiki_url=url)
+    return Constructors.objects.create(name=name,
+                                       nickname=nickname,
+                                       wiki_url=url)
 
 
 def create_race(circuit, name, date, year=2013, round=7):
-    return Races.objects.create(
-        circuit=circuit, date=date, name=name, year=year, round=round
-    )
+    return Races.objects.create(circuit=circuit,
+                                date=date,
+                                name=name,
+                                year=year,
+                                round=round)
 
 
-def create_result(
-    race,
-    driver,
-    constructor,
-    status,
-    grid=1,
-    position=1,
-    position_info=1,
-    position_order=1,
-    points=10,
-    laps=50,
-):
+#yapf: disable
+def create_result(race,driver,constructor,status,grid=1,position=1, position_info=1,position_order=1, points=10, laps=50):
     return Results.objects.create(
-        race=race,
-        driver=driver,
-        constructor=constructor,
-        grid=grid,
-        position_order=position_order,
-        points=points,
-        laps=laps,
-        status=status,
-        position_info=position_info,
-        position=position,
-    )
+        race=race, driver=driver,constructor=constructor, grid=grid,
+        position_order=position_order, points=points, laps=laps,
+        status=status, position_info=position_info,position=position)
+#yapf:enable
 
 
 def create_status(status_info):

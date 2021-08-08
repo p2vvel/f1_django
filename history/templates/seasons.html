@@ -1,7 +1,17 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h1>{{season}}</h1>
+
+<h1>
+    {{season}}
+</h1>
+<h5>
+    {% if finished %}
+        <sub>FINISHED</sub>
+    {% else %}
+        <sub>{{organized_races}}/{{total_races}}</sub>
+    {% endif %}
+</h5>
 
 
 {% if drivers %}

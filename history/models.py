@@ -7,6 +7,8 @@
 # Feel free to rename the models, but don't rename db_table values or field names.
 from django.db import models
 
+from datetime import datetime
+
 
 class Drivers(models.Model):
     id = models.AutoField(db_column="driverId", primary_key=True)
@@ -21,17 +23,6 @@ class Drivers(models.Model):
 
     def __str__(self):
         return "%s %s" % (self.name, self.surname)
-        # if self.code or self.number:
-        #     return (
-        #         "[{}{}{}]".format(
-        #             "%s" % self.code if self.code else "",
-        #             " " if self.code and self.number else "",
-        #             "%s" % self.number if self.number else "",
-        #         )
-        #         + "%s %s" % (self.name, self.surname)
-        #     )
-        # else:
-        #     return "%s %s" % (self.name, self.surname)
 
     class Meta:
         db_table = "drivers"
@@ -72,9 +63,9 @@ class Constructors(models.Model):
 class Constructorresults(models.Model):
     id = models.AutoField(db_column="constructorResultsId", primary_key=True)
     race = models.ForeignKey("Races", models.DO_NOTHING, db_column="raceId")
-    constructor = models.ForeignKey(
-        "Constructors", models.DO_NOTHING, db_column="constructorId"
-    )
+    constructor = models.ForeignKey("Constructors",
+                                    models.DO_NOTHING,
+                                    db_column="constructorId")
     points = models.FloatField(blank=True, null=True)
     status = models.CharField(max_length=255, blank=True, null=True)
 
@@ -85,14 +76,15 @@ class Constructorresults(models.Model):
 class Constructorstandings(models.Model):
     id = models.AutoField(db_column="constructorStandingsId", primary_key=True)
     race = models.ForeignKey("Races", models.DO_NOTHING, db_column="raceId")
-    constructor = models.ForeignKey(
-        "Constructors", models.DO_NOTHING, db_column="constructorId"
-    )
+    constructor = models.ForeignKey("Constructors",
+                                    models.DO_NOTHING,
+                                    db_column="constructorId")
     points = models.FloatField()
     position = models.IntegerField(blank=True, null=True)
-    position_info = models.CharField(
-        db_column="positionText", max_length=255, blank=True, null=True
-    )
+    position_info = models.CharField(db_column="positionText",
+                                     max_length=255,
+                                     blank=True,
+                                     null=True)
     wins = models.IntegerField()
 
     class Meta:
@@ -102,12 +94,15 @@ class Constructorstandings(models.Model):
 class Driverstandings(models.Model):
     id = models.AutoField(db_column="driverStandingsId", primary_key=True)
     race = models.ForeignKey("Races", models.DO_NOTHING, db_column="raceId")
-    driver = models.ForeignKey("Drivers", models.DO_NOTHING, db_column="driverId")
+    driver = models.ForeignKey("Drivers",
+                               models.DO_NOTHING,
+                               db_column="driverId")
     points = models.FloatField()
     position = models.IntegerField(blank=True, null=True)
-    position_info = models.CharField(
-        db_column="positionText", max_length=255, blank=True, null=True
-    )
+    position_info = models.CharField(db_column="positionText",
+                                     max_length=255,
+                                     blank=True,
+                                     null=True)
     wins = models.IntegerField()
 
     class Meta:
@@ -115,10 +110,13 @@ class Driverstandings(models.Model):
 
 
 class Laptimes(models.Model):
-    race = models.OneToOneField(
-        "Races", models.DO_NOTHING, db_column="raceId", primary_key=True
-    )
-    driver = models.ForeignKey(Drivers, models.DO_NOTHING, db_column="driverId")
+    race = models.OneToOneField("Races",
+                                models.DO_NOTHING,
+                                db_column="raceId",
+                                primary_key=True)
+    driver = models.ForeignKey(Drivers,
+                               models.DO_NOTHING,
+                               db_column="driverId")
     lap = models.IntegerField()
     position = models.IntegerField(blank=True, null=True)
     time = models.CharField(max_length=255, blank=True, null=True)
@@ -126,14 +124,17 @@ class Laptimes(models.Model):
 
     class Meta:
         db_table = "lapTimes"
-        unique_together = (("race", "driver", "lap"),)
+        unique_together = (("race", "driver", "lap"), )
 
 
 class Pitstops(models.Model):
-    race = models.OneToOneField(
-        "Races", models.DO_NOTHING, db_column="raceId", primary_key=True
-    )
-    driver = models.ForeignKey(Drivers, models.DO_NOTHING, db_column="driverId")
+    race = models.OneToOneField("Races",
+                                models.DO_NOTHING,
+                                db_column="raceId",
+                                primary_key=True)
+    driver = models.ForeignKey(Drivers,
+                               models.DO_NOTHING,
+                               db_column="driverId")
     stop = models.IntegerField()
     lap = models.IntegerField()
     time = models.TimeField()
@@ -142,16 +143,18 @@ class Pitstops(models.Model):
 
     class Meta:
         db_table = "pitStops"
-        unique_together = (("race", "driver", "stop"),)
+        unique_together = (("race", "driver", "stop"), )
 
 
 class Qualifying(models.Model):
     id = models.AutoField(db_column="qualifyId", primary_key=True)
     race = models.ForeignKey("Races", models.DO_NOTHING, db_column="raceId")
-    driver = models.ForeignKey(Drivers, models.DO_NOTHING, db_column="driverId")
-    constructor = models.ForeignKey(
-        Constructors, models.DO_NOTHING, db_column="constructorId"
-    )
+    driver = models.ForeignKey(Drivers,
+                               models.DO_NOTHING,
+                               db_column="driverId")
+    constructor = models.ForeignKey(Constructors,
+                                    models.DO_NOTHING,
+                                    db_column="constructorId")
     driver_number = models.IntegerField()
     position = models.IntegerField(blank=True, null=True)
     q1 = models.CharField(max_length=255, blank=True, null=True)
@@ -166,11 +169,16 @@ class Races(models.Model):
     id = models.AutoField(db_column="raceId", primary_key=True)
     year = models.IntegerField()
     round = models.IntegerField()
-    circuit = models.ForeignKey(Circuits, models.DO_NOTHING, db_column="circuitId")
+    circuit = models.ForeignKey(Circuits,
+                                models.DO_NOTHING,
+                                db_column="circuitId")
     name = models.CharField(max_length=255)
     date = models.DateField(blank=True, null=True)
     time = models.TimeField(blank=True, null=True)
-    wiki_url = models.CharField(unique=True, max_length=255, blank=True, null=True)
+    wiki_url = models.CharField(unique=True,
+                                max_length=255,
+                                blank=True,
+                                null=True)
 
     def __str__(self):
         return self.name
@@ -182,10 +190,12 @@ class Races(models.Model):
 class Results(models.Model):
     id = models.AutoField(db_column="resultId", primary_key=True)
     race = models.ForeignKey(Races, models.DO_NOTHING, db_column="raceId")
-    driver = models.ForeignKey(Drivers, models.DO_NOTHING, db_column="driverId")
-    constructor = models.ForeignKey(
-        Constructors, models.DO_NOTHING, db_column="constructorId"
-    )
+    driver = models.ForeignKey(Drivers,
+                               models.DO_NOTHING,
+                               db_column="driverId")
+    constructor = models.ForeignKey(Constructors,
+                                    models.DO_NOTHING,
+                                    db_column="constructorId")
     number = models.IntegerField(blank=True, null=True)
     grid = models.IntegerField()
     position = models.IntegerField(blank=True, null=True)
@@ -195,22 +205,28 @@ class Results(models.Model):
     laps = models.IntegerField()
     time = models.CharField(max_length=255, blank=True, null=True)
     milliseconds = models.IntegerField(blank=True, null=True)
-    fastest_lap = models.IntegerField(db_column="fastestLap", blank=True, null=True)
+    fastest_lap = models.IntegerField(db_column="fastestLap",
+                                      blank=True,
+                                      null=True)
     rank = models.IntegerField(blank=True, null=True)
-    fastest_laptime = models.CharField(
-        db_column="fastestLapTime", max_length=255, blank=True, null=True
-    )
-    fastest_lapspeed = models.CharField(
-        db_column="fastestLapSpeed", max_length=255, blank=True, null=True
-    )
-    status = models.ForeignKey("Status", models.DO_NOTHING, db_column="statusId")
+    fastest_laptime = models.CharField(db_column="fastestLapTime",
+                                       max_length=255,
+                                       blank=True,
+                                       null=True)
+    fastest_lapspeed = models.CharField(db_column="fastestLapSpeed",
+                                        max_length=255,
+                                        blank=True,
+                                        null=True)
+    status = models.ForeignKey("Status",
+                               models.DO_NOTHING,
+                               db_column="statusId")
 
     def __str__(self):
-        return "{race.year} {race.name}, {driver}, {result}".format(race=self.race, driver=self.driver, result=self.position_info)
+        return "{race.year} {race.name}, {driver}, {result}".format(
+            race=self.race, driver=self.driver, result=self.position_info)
 
     class Meta:
         db_table = "results"
-    
 
 
 class Seasons(models.Model):
@@ -222,11 +238,43 @@ class Seasons(models.Model):
 
     class Meta:
         db_table = "seasons"
-    
+
+    def count_total_races(year):
+        """Returns number of races in chosen season"""
+        return Races.objects\
+            .filter(year=year)\
+            .count()
 
     def count_races(year):
-        '''Returns number of races in chosen season'''
-        return Races.objects.filter(year=year).aggregate(races_number=models.Max("round"))
+        """Returns number of races in chosen season organised till now(now means db update xd)"""
+        return Races.objects\
+            .filter(year=year, date__lte=datetime.now())\
+            .count()
+
+    def season_finished(year):
+        """Gives info if season was finished (all planned races were already organized)"""
+        current_year = datetime.now().year
+        if year < current_year:
+            return True
+        elif year == current_year:
+            races = Seasons.count_races(year)
+            total_races = Seasons.count_total_races(year)
+
+            if races == total_races and total_races != 0:
+                return True
+            else:
+                return False
+        else:
+            return False
+
+    def get_latest_race(year):
+        '''returns last (or the most recent race) of chosen season'''
+        try:
+            return Races.objects\
+                .filter(year = year, date__lte=datetime.now())\
+                .order_by("-round")[0]
+        except Exception as e:
+            return None  #if there were no races exception is raised
 
 
 class Status(models.Model):
@@ -235,6 +283,6 @@ class Status(models.Model):
 
     def __str__(self):
         return self.status_info
-
+        
     class Meta:
         db_table = "status"

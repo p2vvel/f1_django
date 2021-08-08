@@ -7,7 +7,6 @@ from django.test.testcases import TransactionTestCase
 from django.urls.base import reverse
 from django.utils import timezone
 
-
 # importing all create_* functions
 from .utils import *
 from history.utils import group_elements
@@ -15,9 +14,9 @@ from history.utils import group_elements
 
 class TestGrouping(TestCase):
     """tests for function grouping elements, useful for e.g. showing drivers in seasons in chosen team"""
-
     def test_grouping_elements(self):
-        data = [(2000, 12), (2000, 20), (2000, 2), (2001, 202), (2001, 33), (2004, 0)]
+        data = [(2000, 12), (2000, 20), (2000, 2), (2001, 202), (2001, 33),
+                (2004, 0)]
         expected_result = [(2000, [12, 20, 2]), (2001, [202, 33]), (2004, [0])]
         self.assertCountEqual(group_elements(data), expected_result)
 
@@ -41,11 +40,15 @@ class TestGrouping(TestCase):
         ]
 
         self.assertCountEqual(
-            group_elements(data, index_key=lambda x: x[1], value_key=lambda x: x[0]),
+            group_elements(data,
+                           index_key=lambda x: x[1],
+                           value_key=lambda x: x[0]),
             expected_results,
         )
         self.assertCountEqual(
-            group_elements(data, index_key=lambda x: x[0], value_key=lambda x: x[1]),
+            group_elements(data,
+                           index_key=lambda x: x[0],
+                           value_key=lambda x: x[1]),
             expected_results2,
         )
 
@@ -55,9 +58,9 @@ class StrModelsTests(TestCase):
         """
         Tests for Drivers model __str__
         """
-        driver_nothing = Drivers(
-            name="Forename", surname="Surname", nickname="driverref"
-        )
+        driver_nothing = Drivers(name="Forename",
+                                 surname="Surname",
+                                 nickname="driverref")
         self.assertEqual(str(driver_nothing), "Forename Surname")
 
     def test_circuit_str(self):
@@ -71,7 +74,8 @@ class StrModelsTests(TestCase):
         """
         Tests for Constructors model __str__
         """
-        constructor = Constructors(name="Test constructor", nickname="constructorref")
+        constructor = Constructors(name="Test constructor",
+                                   nickname="constructorref")
         self.assertEqual(str(constructor), "Test constructor")
 
     def test_race_str(self):
@@ -83,7 +87,9 @@ class StrModelsTests(TestCase):
         self.assertEqual(str(race), "Test race")
 
     def test_result_str(self):
-        driver = create_driver(name="Sebastian", surname="Vettel", nickname="vettel")
+        driver = create_driver(name="Sebastian",
+                               surname="Vettel",
+                               nickname="vettel")
         circuit = create_circuit(name="Monza", nickname="monza")
         constructor = create_constructor(name="Ferrari", nickname="ferrari")
         race = create_race(
@@ -107,7 +113,8 @@ class StrModelsTests(TestCase):
             laps=62,
         )
 
-        self.assertEqual("2018 Italian Grand Prix, Sebastian Vettel, 1", str(result))
+        self.assertEqual("2018 Italian Grand Prix, Sebastian Vettel, 1",
+                         str(result))
 
     def test_status_str(self):
         status = create_status(status_info="Nothing special")
