@@ -3,8 +3,10 @@ Contains functions written to make testing app easier
 """
 
 from history.models import (
+    Constructorstandings,
     Drivers,
     Circuits,
+    Driverstandings,
     Qualifying,
     Races,
     Results,
@@ -56,16 +58,33 @@ def create_status(status_info):
 
 
 def create_qualifying(race, driver, constructor, position, number):
-    return Qualifying.objects.create(
-        race=race,
-        driver=driver,
-        constructor=constructor,
-        driver_number=number,
-        position=position,
-    )
+    return Qualifying.objects.create(race=race,
+                                     driver=driver,
+                                     constructor=constructor,
+                                     driver_number=number,
+                                     position=position)
 
 
 def create_season(year, url=""):
     if url == "":
         url = "year_%s" % year
     return Seasons.objects.create(year=year, wiki_url=url)
+
+
+def create_driverstandings(driver, race, points=25, position=1, wins=1):
+    return Driverstandings.objects.create(driver=driver,
+                                          race=race,
+                                          points=points,
+                                          position=position,
+                                          wins=wins)
+
+
+#yapf: disable
+def create_constructorstandings(constructor, race, points=25, position=1, wins=1):
+    return Constructorstandings.objects.create(
+                                        constructor=constructor,
+                                        race=race,
+                                        points=points,
+                                        position=position,
+                                        wins=wins)
+#yapf: enable

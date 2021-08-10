@@ -177,12 +177,14 @@ class SeasonView(DetailView):
             context["drivers"] = []
 
         try:
-            context["finished"] = Seasons.season_finished(my_season.year)[""]
+            context["finished"] = Seasons.season_finished(my_season.year)
             context["total_races"] = Seasons.count_total_races(my_season.year)
             context["organized_races"] = Seasons.count_races(my_season.year)
         except Exception as e:
             context["finished"] = None
             context["total_races"] = None
             context["organized_races"] = None
+        
+        
 
         return context

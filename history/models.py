@@ -5,6 +5,7 @@
 #   * Make sure each ForeignKey and OneToOneField has `on_delete` set to the desired behavior
 #   * Remove `managed = False` lines if you wish to allow Django to create, modify, and delete the table
 # Feel free to rename the models, but don't rename db_table values or field names.
+from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 
 from datetime import datetime
@@ -246,10 +247,11 @@ class Seasons(models.Model):
             .count()
 
     def count_races(year):
-        """Returns number of races in chosen season organised till now(now means db update xd)"""
+        """Returns number of races in chosen season organised till now(now = until db update that will add race results info xd)"""
         return Races.objects\
-            .filter(year=year, date__lte=datetime.now())\
-            .count()
+                .filter(year=year, driverstandings__isnull=False)\
+                .distinct()\
+                .count()
 
     def season_finished(year):
         """Gives info if season was finished (all planned races were already organized)"""
@@ -268,11 +270,16 @@ class Seasons(models.Model):
             return False
 
     def get_latest_race(year):
-        '''returns last (or the most recent race) of chosen season'''
+        '''returns last (or the most recent race i have standings data for) of chosen season'''
+
+        #last race i have data for is
         try:
-            return Races.objects\
-                .filter(year = year, date__lte=datetime.now())\
-                .order_by("-round")[0]
+            last_race_standingsdata = Driverstandings.objects\
+                .filter(race__year=year, race__isnull=False)\
+                .order_by("-race__round")\
+                .values_list("race", flat=True)
+
+            return Races.objects.get(pk=last_race_standingsdata[0])
         except Exception as e:
             return None  #if there were no races exception is raised
 
@@ -283,6 +290,6 @@ class Status(models.Model):
 
     def __str__(self):
         return self.status_info
-        
+
     class Meta:
         db_table = "status"
