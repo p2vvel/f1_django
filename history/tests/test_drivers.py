@@ -1,3 +1,6 @@
+from datetime import datetime, timedelta
+
+from django.shortcuts import redirect
 from .utils import *
 from django.urls.base import reverse
 from django.utils import timezone
@@ -9,12 +12,11 @@ class DriverViewTests(TestCase):
         """
         tests if driver details view works correctly when using slug identifier in urlconf
         """
-        driver = Drivers.objects.create(
-            name="Forename", surname="Surname", nickname="driverref"
-        )
+        driver = Drivers.objects.create(name="Forename",
+                                        surname="Surname",
+                                        nickname="driverref")
         response = self.client.get(
-            reverse("history:driver_details", args=(driver.nickname,))
-        )
+            reverse("history:driver_details", args=(driver.nickname, )))
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context["driver"], driver)
 
@@ -55,22 +57,25 @@ class DriverViewTests(TestCase):
             date=timezone.now(),
         )
 
-        results1 = create_result(
-            race=race1, driver=driver, constructor=constructor, status=status
-        )
-        results2 = create_result(
-            race=race2, driver=driver, constructor=constructor, status=status
-        )
-        results3 = create_result(
-            race=race3, driver=driver, constructor=constructor, status=status
-        )
-        results4 = create_result(
-            race=race4, driver=driver, constructor=constructor, status=status
-        )
+        results1 = create_result(race=race1,
+                                 driver=driver,
+                                 constructor=constructor,
+                                 status=status)
+        results2 = create_result(race=race2,
+                                 driver=driver,
+                                 constructor=constructor,
+                                 status=status)
+        results3 = create_result(race=race3,
+                                 driver=driver,
+                                 constructor=constructor,
+                                 status=status)
+        results4 = create_result(race=race4,
+                                 driver=driver,
+                                 constructor=constructor,
+                                 status=status)
 
         response = self.client.get(
-            reverse("history:driver_details", args=(driver.nickname,))
-        )
+            reverse("history:driver_details", args=(driver.nickname, )))
         self.assertEqual(response.status_code, 200)
         # checks first race
         self.assertEqual(response.context["first_race"], race1)
@@ -87,8 +92,7 @@ class DriverViewTests(TestCase):
         status = create_status(status_info="Nothing xd")
 
         response = self.client.get(
-            reverse("history:driver_details", args=(driver.nickname,))
-        )
+            reverse("history:driver_details", args=(driver.nickname, )))
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context["first_race"], None)
         self.assertEqual(response.context["last_race"], None)
@@ -108,13 +112,13 @@ class DriverViewTests(TestCase):
             round=3,
             date=timezone.now(),
         )
-        results = create_result(
-            race=race, driver=driver, constructor=constructor, status=status
-        )
+        results = create_result(race=race,
+                                driver=driver,
+                                constructor=constructor,
+                                status=status)
 
         response = self.client.get(
-            reverse("history:driver_details", args=(driver.nickname,))
-        )
+            reverse("history:driver_details", args=(driver.nickname, )))
         self.assertEqual(response.status_code, 200)
         # checks first race
         self.assertEqual(response.context["first_race"], race)
@@ -127,23 +131,27 @@ class DriverViewTests(TestCase):
         """
         driver1 = create_driver(name="John", surname="Doe", nickname="johndoe")
         driver2 = create_driver(name="Joe", surname="Doe", nickname="joedoe")
-        driver3 = create_driver(name="Johnny", surname="Doe", nickname="johnnydoe")
+        driver3 = create_driver(name="Johnny",
+                                surname="Doe",
+                                nickname="johnnydoe")
 
         driver4 = create_driver(name="Ed", surname="Ed", nickname="ed")
         driver5 = create_driver(name="Edd", surname="Edd", nickname="edd")
         driver6 = create_driver(name="Eddy", surname="Eddy", nickname="eddy")
 
         response = self.client.get(
-            reverse("history:driver_details", args=(driver1.nickname,))
-        )
+            reverse("history:driver_details", args=(driver1.nickname, )))
         self.assertEqual(response.status_code, 200)
-        self.assertCountEqual(response.context["related_drivers"], [driver2, driver3])
+        self.assertCountEqual(response.context["related_drivers"],
+                              [driver2, driver3])
 
     def test_driver_teams(self):
         """
         Tests for checking if function finding drivers team is ok
         """
-        driver = create_driver(name="John", surname="Doe", nickname="johnnydoodoo")
+        driver = create_driver(name="John",
+                               surname="Doe",
+                               nickname="johnnydoodoo")
         ferrari = create_constructor(name="Ferrari")
         red_bull = create_constructor(name="Red Bull")
         aston_martin = create_constructor(name="Aston Martin")
@@ -199,43 +207,54 @@ class DriverViewTests(TestCase):
             round=11,
             date=timezone.now(),
         )
-        results1 = create_result(
-            race=race1, driver=driver, constructor=ferrari, status=status
-        )
-        results2 = create_result(
-            race=race2, driver=driver, constructor=red_bull, status=status
-        )
-        results3 = create_result(
-            race=race3, driver=driver, constructor=red_bull, status=status
-        )
-        results4 = create_result(
-            race=race4, driver=driver, constructor=red_bull, status=status
-        )
-        results5 = create_result(
-            race=race5, driver=driver, constructor=aston_martin, status=status
-        )
-        results5 = create_result(
-            race=race6, driver=driver, constructor=ferrari, status=status
-        )
-        results5 = create_result(
-            race=race7, driver=driver, constructor=aston_martin, status=status
-        )
+        results1 = create_result(race=race1,
+                                 driver=driver,
+                                 constructor=ferrari,
+                                 status=status)
+        results2 = create_result(race=race2,
+                                 driver=driver,
+                                 constructor=red_bull,
+                                 status=status)
+        results3 = create_result(race=race3,
+                                 driver=driver,
+                                 constructor=red_bull,
+                                 status=status)
+        results4 = create_result(race=race4,
+                                 driver=driver,
+                                 constructor=red_bull,
+                                 status=status)
+        results5 = create_result(race=race5,
+                                 driver=driver,
+                                 constructor=aston_martin,
+                                 status=status)
+        results5 = create_result(race=race6,
+                                 driver=driver,
+                                 constructor=ferrari,
+                                 status=status)
+        results5 = create_result(race=race7,
+                                 driver=driver,
+                                 constructor=aston_martin,
+                                 status=status)
 
         # second driver for better testing
-        driver2 = create_driver(name="Gregor", surname="Florida", nickname="jersey")
-        results11 = create_result(
-            race=race1, driver=driver2, constructor=aston_martin, status=status
-        )
-        results22 = create_result(
-            race=race2, driver=driver2, constructor=ferrari, status=status
-        )
-        results33 = create_result(
-            race=race3, driver=driver2, constructor=red_bull, status=status
-        )
+        driver2 = create_driver(name="Gregor",
+                                surname="Florida",
+                                nickname="jersey")
+        results11 = create_result(race=race1,
+                                  driver=driver2,
+                                  constructor=aston_martin,
+                                  status=status)
+        results22 = create_result(race=race2,
+                                  driver=driver2,
+                                  constructor=ferrari,
+                                  status=status)
+        results33 = create_result(race=race3,
+                                  driver=driver2,
+                                  constructor=red_bull,
+                                  status=status)
 
         response = self.client.get(
-            reverse("history:driver_details", args=(driver.nickname,))
-        )
+            reverse("history:driver_details", args=(driver.nickname, )))
         self.assertEqual(response.status_code, 200)
         self.maxDiff = None
 
@@ -249,3 +268,20 @@ class DriverViewTests(TestCase):
         ]
 
         self.assertCountEqual(response.context["teams"], expected_results)
+
+    # def test_wins(self):
+    #     vettel = create_driver(name="Sebastian",
+    #                            surname="Vettel",
+    #                            nickname="vettel")
+    #     redbull = create_constructor(name="Red Bull", nickname="redbull")
+    #     status=create_status(status_info="Finished")
+    #     monza = create_circuit(name="Monza", nickanme="monza")
+    #     races = [
+    #         create_race(circuit=monza,
+    #                     name="Race%s" % k,
+    #                     date=datetime.now() - timedelta(days=30 * k),
+    #                     year=2000 + k,
+    #                     round=k) for k in [10, 11, 12, 15, 16, 17, 20]]
+    #     results = create_result(
+    #         race=races[k], driver=vettel, constructor=redbull, status=status, grid=2, position=1
+    #     )

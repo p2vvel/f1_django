@@ -190,5 +190,4 @@ class SeasonViewTests(TestCase):
         self.assertEqual(Seasons.season_finished(2021), True)
         self.assertEqual(Seasons.get_latest_race(2021), races[-1])
 
-    def notest():
-        pass
+    

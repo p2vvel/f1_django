@@ -21,7 +21,6 @@ class DriverView(generic.DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # dont have to write context["driver"] all time, stores chosen driver data
         my_driver = context["driver"]
 
         # pobieram informacje o pierwszym wyscigu danego kierowcy
@@ -66,6 +65,24 @@ class DriverView(generic.DetailView):
             context["teams"] = temp
         except Exception as e:
             context["teams"] = None
+
+        #counting wins amount
+        try:
+            temp = Results.objects\
+                .filter(driver=my_driver, position=1)\
+                .count()
+            context["wins"] = temp
+        except Exception as e:
+            context["wins"] = None
+
+        #counting pole positions amount
+        try:
+            temp = Qualifying.objects\
+                .filter(driver=my_driver, position=1)\
+                .count()
+            context["pole_positions"] = temp
+        except Exception as e:
+            context["pole_positions"] = None
 
         return context
 
