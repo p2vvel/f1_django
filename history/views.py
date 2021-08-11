@@ -7,7 +7,7 @@ from django.urls.base import reverse
 # Create your views here.
 from django.views import generic
 from django.views.generic.detail import DetailView
-from .models import Circuits, Constructors, Drivers, Qualifying, Races, Results, Seasons
+from .models import Circuits, Constructors, Constructorstandings, Drivers, Driverstandings, Qualifying, Races, Results, Seasons
 
 from .utils import group_elements
 
@@ -165,16 +165,27 @@ class SeasonView(DetailView):
         context = super().get_context_data(**kwargs)
         my_season = context["season"]
 
+        last_race = Seasons.get_latest_race(year=my_season.year)
         #drivers data
-        try:
-            temp = Results.objects\
-                .filter(race__year=my_season.year)\
-                .values("driver").distinct()
+        if last_race:
+            try:
+                temp = Driverstandings.objects\
+                        .filter(race=last_race)\
+                        .order_by("position")
+                context["drivers"] = temp
+            except Exception as e:
+                context["drivers"] = []
 
-            temp = [Drivers.objects.get(pk=k["driver"]) for k in temp]
-            context["drivers"] = temp
-        except Exception as e:
+            try:
+                temp = Constructorstandings.objects\
+                    .filter(race=last_race)\
+                    .order_by("position")
+                context["constructors"] = temp
+            except Exception as e:
+                context["constructors"] = []
+        else:
             context["drivers"] = []
+            context["constructors"] = []
 
         try:
             context["finished"] = Seasons.season_finished(my_season.year)
@@ -184,7 +195,5 @@ class SeasonView(DetailView):
             context["finished"] = None
             context["total_races"] = None
             context["organized_races"] = None
-        
-        
 
         return context

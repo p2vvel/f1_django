@@ -15,14 +15,60 @@
 
 
 {% if drivers %}
-    <ul>
+    <h3>Drivers</h3>
+    <table>
+        <tr>
+            <th>Position</th>
+            <th>Driver</th>
+            <th>Points</th>
+        </tr>
         {% for k in drivers %}
-        <li>
-            {{k}}
-        </li>
+        <tr>
+            <td>
+                {{k.position}}
+            </td>
+            <td>
+                <a href={%url "history:driver_details" nick=k.driver.nickname %}>
+                    {{k.driver}}
+                </a>
+            </td>
+            <td>
+                {{k.points|floatformat}}
+            </td>
+        </tr>
         {% endfor %}
-    </ul>
+    </table>
 {% endif %}
+
+
+
+{% if constructors %}
+    <h3>Constructors</h3>
+    <table>
+        <tr>
+            <th>Position</th>
+            <th>Constructor</th>
+            <th>Points</th>
+        </tr>
+        {% for k in constructors %}
+        <tr>
+            <td>
+                {{k.position}}
+            </td>
+            <td>
+                <a href={%url "history:constructor_details" nick=k.constructor.nickname %}>
+                    {{k.constructor}}
+                </a>
+            </td>
+            <td>
+                {{k.points|floatformat}}
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+{% endif %}
+
+
 
 
 {% endblock content %}

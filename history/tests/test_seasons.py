@@ -21,11 +21,6 @@ class SeasonViewTests(TestCase):
             create_driver(name="Fernando", surname="Alonso",nickname="alonso"),
             create_driver(name="Kimi", surname="Raikkonen", nickname="kimi"),
         ]
-        constructors = [
-            create_constructor(name="Red Bull"),
-            create_constructor(name="Ferrari"),
-            create_constructor(name="McLaren"),
-        ]
         #yapf: enable
         races = []
         days = [-7, -6, -5, -4, -3, -2, -1]
@@ -51,7 +46,6 @@ class SeasonViewTests(TestCase):
         self.assertEqual(Seasons.season_finished(2021), True)
         self.assertEqual(Seasons.get_latest_race(2021), races[-1])
 
-
     def test_races_count_unfinished_current_season(self):
         season = create_season(year=2021)
         circuit = create_circuit(name="Monza", nickname="monza")
@@ -60,11 +54,6 @@ class SeasonViewTests(TestCase):
             create_driver(name="Sebastian",surname="Vettel",nickname="vettel"),
             create_driver(name="Fernando", surname="Alonso",nickname="alonso"),
             create_driver(name="Kimi", surname="Raikkonen", nickname="kimi"),
-        ]
-        constructors = [
-            create_constructor(name="Red Bull"),
-            create_constructor(name="Ferrari"),
-            create_constructor(name="McLaren"),
         ]
         #yapf: enable
         races = []
@@ -84,7 +73,6 @@ class SeasonViewTests(TestCase):
             driver_standings.append(create_driverstandings(driver=drivers[2], race=k, points=15, position=3, wins=0))
         #yapf: enable
 
-
         response = self.client.get(
             reverse("history:season_details", args=(season.year, )))
         self.assertEqual(response.status_code, 200)
@@ -101,11 +89,6 @@ class SeasonViewTests(TestCase):
             create_driver(name="Sebastian",surname="Vettel",nickname="vettel"),
             create_driver(name="Fernando", surname="Alonso",nickname="alonso"),
             create_driver(name="Kimi", surname="Raikkonen", nickname="kimi"),
-        ]
-        constructors = [
-            create_constructor(name="Red Bull"),
-            create_constructor(name="Ferrari"),
-            create_constructor(name="McLaren"),
         ]
         #yapf: enable
         races = []
@@ -142,12 +125,7 @@ class SeasonViewTests(TestCase):
             create_driver(name="Fernando", surname="Alonso",nickname="alonso"),
             create_driver(name="Kimi", surname="Raikkonen", nickname="kimi"),
         ]
-        constructors = [
-            create_constructor(name="Red Bull"),
-            create_constructor(name="Ferrari"),
-            create_constructor(name="McLaren"),
-        ]
-        #yapf: enable       #TODO
+        #yapf: enable
         races = []
         days = [-7, -6, -5, -4, -3, -2, -1]
         for k in range(len(days)):
@@ -157,7 +135,7 @@ class SeasonViewTests(TestCase):
                             year=2021,
                             round=k + 1,
                             date=datetime.now() + timedelta(days=days[k])))
-        
+
         response = self.client.get(
             reverse("history:season_details", args=(season.year, )))
         self.assertEqual(response.status_code, 200)
@@ -168,7 +146,7 @@ class SeasonViewTests(TestCase):
 
     def test_season_no_races(self):
         season = create_season(year=2021)
-        
+
         response = self.client.get(
             reverse("history:season_details", args=(season.year, )))
         self.assertEqual(response.status_code, 200)
@@ -185,11 +163,6 @@ class SeasonViewTests(TestCase):
             create_driver(name="Sebastian",surname="Vettel",nickname="vettel"),
             create_driver(name="Fernando", surname="Alonso",nickname="alonso"),
             create_driver(name="Kimi", surname="Raikkonen", nickname="kimi"),
-        ]
-        constructors = [
-            create_constructor(name="Red Bull"),
-            create_constructor(name="Ferrari"),
-            create_constructor(name="McLaren"),
         ]
         #yapf: enable
         races = []
@@ -209,7 +182,6 @@ class SeasonViewTests(TestCase):
             driver_standings.append(create_driverstandings(driver=drivers[2], race=k, points=15, position=3, wins=0))
         #yapf: enable
 
-
         response = self.client.get(
             reverse("history:season_details", args=(season.year, )))
         self.assertEqual(response.status_code, 200)
@@ -217,3 +189,6 @@ class SeasonViewTests(TestCase):
         self.assertEqual(Seasons.count_total_races(2021), 7)
         self.assertEqual(Seasons.season_finished(2021), True)
         self.assertEqual(Seasons.get_latest_race(2021), races[-1])
+
+    def notest():
+        pass
