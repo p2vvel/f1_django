@@ -11,6 +11,8 @@ from .models import Circuits, Constructors, Constructorstandings, Drivers, Drive
 
 from .utils import group_elements
 
+from django.db.models import Q
+
 
 class DriverView(generic.DetailView):
     model = Drivers
@@ -66,7 +68,7 @@ class DriverView(generic.DetailView):
         except Exception as e:
             context["teams"] = None
 
-        #counting wins amount
+        #licze ilosc wygranych
         try:
             temp = Results.objects\
                 .filter(driver=my_driver, position=1)\
@@ -75,15 +77,26 @@ class DriverView(generic.DetailView):
         except Exception as e:
             context["wins"] = None
 
-        #counting pole positions amount
+        #licze ilosc pole position
         try:
-            temp = Qualifying.objects\
-                .filter(driver=my_driver, position=1)\
-                .count()
+            #sprawdzanie po miejscach w kwalifikacjach dalo wyniki odmienne od tych ktore sa wszedzie prezentowane
+            #przykladowo alonso w 2007 na wegrzech pomimo wykrecenia najszybszego kolka (w teorii zdobyciu pp),
+            #dostal kare 5 pozycji za blokowanie hamiltona, dlatego nie zdobyl pole position, wybrana opcja daje lepsze wyniki,
+            #np. w przypadku leclerca (sporne monaco 2021 - wypadek po zdobyciu pp) wyniki zgadzaja sie z historycznymi z innych zrodel
+            temp = Results.objects\
+                    .filter(driver=my_driver, grid=1)\
+                    .count()
             context["pole_positions"] = temp
         except Exception as e:
             context["pole_positions"] = None
 
+        try:
+            temp = Results.objects.filter(
+                Q(driver=my_driver)
+                & (Q(position=1) | Q(position=2) | Q(position=3))).count()
+            context["podiums"] = temp
+        except Exception as e:
+            context["podiums"] = None
         return context
 
 

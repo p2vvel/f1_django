@@ -24,7 +24,19 @@
     <p>Nationality: {{driver.nationality}} </p>
 {% endif %}
 
-{% comment %} TODO: links to races sites {% endcomment %}
+
+{% if wins %}
+    <p>Wins: {{wins}}</p>
+{% endif %}
+{% if podiums %}
+    <p>Wins: {{podiums}}</p>
+{% endif %}
+
+{% if pole_positions %}
+    <p>Pole positions: {{pole_positions}}</p>
+{% endif %}
+
+
 {% if first_race %}
     <p>First race: <a href={% url 'history:race_details' pk=first_race.pk %}>{{first_race.year}} {{first_race.name}}</a></p> 
 {% endif %}
