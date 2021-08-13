@@ -2,18 +2,37 @@
 Contains functions written to make testing app easier
 """
 
-from history.models import (
-    Constructorstandings,
-    Drivers,
-    Circuits,
-    Driverstandings,
-    Qualifying,
-    Races,
-    Results,
-    Status,
-    Constructors,
-    Seasons,
-)
+
+
+
+from django.db import reset_queries
+from history.models import *
+
+
+# def compare_nested(a, b):
+#     #sprawdzam dlugosc
+#     try:
+#         #jesli iterowalny
+#         if len(a) != len(b):
+#             return False
+#         else:
+#             try:
+#                 for k in temp:
+#                     if compare_nested(*k) == False:
+#                         return False
+#                 return True
+#             except Exception as e:
+#                 print("ERROR: %s" % e)
+
+#     except:
+#         #jesli nieiterowalny, to porownuje i prosto zwracam
+#         return a == b
+
+#     try:
+#         temp = zip(a, b)
+#         for k in temp:
+#             if compare_nested(*k)
+
 
 
 #yapf:disable

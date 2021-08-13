@@ -1,8 +1,7 @@
-from django.http import response
 from django.urls.base import reverse
-from django.test import TestCase, client
+from django.test import TestCase
 
-from history.models import Circuits, Constructors, Drivers, Races
+from history.models import Constructors, Drivers, Races
 
 
 class TestDriversView(TestCase):
