@@ -1,6 +1,7 @@
+from unittest.runner import TextTestRunner
+from history.tests.utils import assert_grouped_elements
 from django.urls.base import reverse
 from django.test import TestCase
-
 
 from history.models import Constructors, Drivers
 
@@ -34,9 +35,9 @@ class ConstructorViewTests(TestCase):
         '''
         Sprawdzam czy poprawnie pobieram informacje o kierowcach w danych sezonach w danym zespole
         '''
-        
+
         red_bull = Constructors.objects.get(name="Red Bull")
-        
+
         coulthard = Drivers.objects.get(surname="Coulthard")
         klien = Drivers.objects.get(surname="Klien")
         liuzzi = Drivers.objects.get(surname="Liuzzi")
@@ -49,6 +50,14 @@ class ConstructorViewTests(TestCase):
         albon = Drivers.objects.get(surname="Albon")
         gasly = Drivers.objects.get(surname="Gasly")
         perez = Drivers.objects.get(surname="Perez")
+
+        alpha_tauri = Constructors.objects.get(name="AlphaTauri")
+        tsunoda = Drivers.objects.get(surname="Tsunoda")
+
+        alpha_tauri_drivers = [
+            (2020, [gasly, kvyat]),
+            (2021, [gasly, tsunoda]),
+        ]
 
         red_bull_drivers = [(2005, [coulthard, klien, liuzzi]),
                             (2006, [coulthard, klien, doornbos]),
@@ -65,11 +74,13 @@ class ConstructorViewTests(TestCase):
                             (2019, [verstappen, gasly, albon]),
                             (2020, [verstappen, albon]),
                             (2021, [verstappen, perez])]
-        
+
         self.maxDiff = None
 
-        for k in [(red_bull, red_bull_drivers)]:
-            for team, drivers in k:
-                response = self.client.get(reverse("history:constructor_details", args=(team.nickname,)))
-                self.assertEqual(response.status_code, 200)
-                self.assertCountEqual(response.context["drivers"], drivers)
+        for constructor, drivers in [(red_bull, red_bull_drivers),
+                                     (alpha_tauri, alpha_tauri_drivers)]:
+            response = self.client.get(
+                reverse("history:constructor_details",
+                        args=(constructor.nickname, )))
+            self.assertEqual(response.status_code, 200)
+            assert_grouped_elements(self, response.context["drivers"], drivers)

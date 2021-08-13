@@ -1,3 +1,4 @@
+from history.tests.utils import assert_grouped_elements
 from django.urls.base import reverse
 from django.test import TestCase
 
@@ -121,7 +122,9 @@ class TestDriversView(TestCase):
             response = self.client.get(
                 reverse("history:driver_details", args=(driver.nickname, )))
             self.assertEqual(response.status_code, 200)
-            self.assertCountEqual(response.context["teams"], teams)
+            #przy zmianie kolejnosci zespolow przy wykorzystaniu self.assertCountEqual moglbym uzyskac falszywe bledy
+            # self.assertCountEqual(response.context["teams"], teams)
+            assert_grouped_elements(self, response.context["teams"], teams)
 
     def test_wins(self):
         '''

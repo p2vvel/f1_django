@@ -1,6 +1,7 @@
-
 def group_elements(data, index_key=lambda x: x[0], value_key=lambda x: x[1]):
-    '''Groups elements in pairs (index, [values for index])'''
+    '''
+    Grupuje elementy w pary (index, [wartosci odpowiadajace danemu indeksowi])
+    '''
     indexes = set([index_key(k) for k in data])
     result = {k: [] for k in indexes}
     for k in data:

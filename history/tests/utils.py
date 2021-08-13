@@ -2,37 +2,20 @@
 Contains functions written to make testing app easier
 """
 
-
-
-
+from django import test
 from django.db import reset_queries
 from history.models import *
 
 
-# def compare_nested(a, b):
-#     #sprawdzam dlugosc
-#     try:
-#         #jesli iterowalny
-#         if len(a) != len(b):
-#             return False
-#         else:
-#             try:
-#                 for k in temp:
-#                     if compare_nested(*k) == False:
-#                         return False
-#                 return True
-#             except Exception as e:
-#                 print("ERROR: %s" % e)
-
-#     except:
-#         #jesli nieiterowalny, to porownuje i prosto zwracam
-#         return a == b
-
-#     try:
-#         temp = zip(a, b)
-#         for k in temp:
-#             if compare_nested(*k)
-
+def assert_grouped_elements(test_class, data_a, data_b):
+    '''
+    Prostsze testowanie struktur zwroconych przez funkcje history.models.utils.group_elements
+    '''
+    test_class.assertEqual(len(data_a), len(data_b))
+    temp = zip(sorted(data_a), sorted(data_b))
+    for a, b in temp:
+        test_class.assertEqual(a[0], b[0])  #pierwszy element zawsze jest pojedyncza wartoscia
+        test_class.assertCountEqual(a[1], b[1]) #drugi element zawsze jest lista
 
 
 #yapf:disable
