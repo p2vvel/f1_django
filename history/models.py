@@ -249,7 +249,7 @@ class Seasons(models.Model):
     def count_races(year):
         """Returns number of races in chosen season organised till now(now = until db update that will add race results info xd)"""
         return Races.objects \
-            .filter(year=year, driverstandings__isnull=False) \
+            .filter(year=year, results__isnull=False, date__lte=datetime.now()) \
             .distinct() \
             .count()
 
@@ -262,10 +262,7 @@ class Seasons(models.Model):
             races = Seasons.count_races(year)
             total_races = Seasons.count_total_races(year)
 
-            if races == total_races and total_races != 0:
-                return True
-            else:
-                return False
+            return races == total_races and total_races != 0 
         else:
             return False
 

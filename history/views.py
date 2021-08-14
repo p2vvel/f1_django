@@ -142,7 +142,8 @@ class CircuitView(generic.DetailView):
         my_circuit = context["circuit"]
         try:
             pass
-            temp = Races.objects.filter(circuit=my_circuit, results__isnull=False).distinct()
+            temp = Races.objects.filter(circuit=my_circuit,
+                                        results__isnull=False).distinct()
             temp = group_elements(temp,
                                   index_key=lambda x: x.year,
                                   value_key=lambda x: x)
@@ -195,8 +196,10 @@ class SeasonView(DetailView):
         context = super().get_context_data(**kwargs)
         my_season = context["season"]
 
+        #informacje o miejscach w stawce sa grupowane wg ostatniego odbytego wyscigu
         last_race = Seasons.get_latest_race(year=my_season.year)
-        #drivers data
+
+        #kierowcy i konstruktorzy
         if last_race:
             try:
                 temp = Driverstandings.objects\
@@ -217,6 +220,7 @@ class SeasonView(DetailView):
             context["drivers"] = []
             context["constructors"] = []
 
+        #liczba wyscigow(dotychczasowych i calkowita) i o zakonczeniu sezonu
         try:
             context["finished"] = Seasons.season_finished(my_season.year)
             context["total_races"] = Seasons.count_total_races(my_season.year)
