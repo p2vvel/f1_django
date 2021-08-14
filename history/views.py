@@ -230,4 +230,18 @@ class SeasonView(DetailView):
             context["total_races"] = None
             context["organized_races"] = None
 
+        #informacje o nastepym sezonie
+        try:
+            context["next_season"] = Seasons.objects.get(year=my_season.year +
+                                                         1)
+        except:
+            context["next_season"] = None
+
+        #informacje o poprzednim sezonie
+        try:
+            context["previous_season"] = Seasons.objects.get(
+                year=my_season.year - 1)
+        except:
+            context["previous_season"] = None
+
         return context

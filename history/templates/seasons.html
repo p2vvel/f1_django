@@ -13,6 +13,18 @@
     {% endif %}
 </h1>
 
+{% if previous_season %}
+    <p>
+        <a href={% url "history:season_details" pk=previous_season.year %}>Previous season({{previous_season.year}})</a>
+    </p>
+{% endif %}
+
+{% if next_season %}
+    <p>
+        <a href={% url "history:season_details" pk=next_season.year %}>Next season({{next_season.year}})</a>
+    </p>
+{% endif %}
+
 
 {% if drivers %}
     <h3>Drivers</h3>

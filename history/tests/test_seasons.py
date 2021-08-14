@@ -76,6 +76,30 @@ class SeasonViewTests(TestCase):
             self.assertEqual(response.status_code, 200)
             self.assertEqual(response.context["finished"], finished)
 
+    def test_next_season(self):
+        '''
+        Sprawdzam czy porpawnie pobieram informacje o nastepnym sezonie(przy ostatnim w bazie ma nic nie byc)
+        '''
+        seasons = list(Seasons.objects.all().order_by("year")) + [None]
+
+        for k in range(1, len(seasons)):
+            response = self.client.get(
+                reverse("history:season_details", args=(seasons[k - 1].year, )))
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(response.context["next_season"], seasons[k])
+    
+    def test_previous_season(self):
+        '''
+        Sprawdzam czy porpawnie pobieram informacje o poprzednim sezonie(przy ostatnim w bazie ma nic nie byc)
+        '''
+        seasons = [None] + list(Seasons.objects.all().order_by("year"))
+
+        for k in range(1, len(seasons)):
+            response = self.client.get(
+                reverse("history:season_details", args=(seasons[k].year, )))
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(response.context["previous_season"], seasons[k-1])
+
 
 class SeasonViewTestsFakeData(TestCase):
     '''
