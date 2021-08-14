@@ -191,3 +191,21 @@ class TestDriversView(TestCase):
                 reverse("history:driver_details", args=(driver.nickname, )))
             self.assertEqual(response.status_code, 200)
             self.assertEqual(response.context["pole_positions"], poles)
+
+    def test_races_count(self):
+        '''
+        Sprawdzam czy prawidlowo licze wyscigi w ktorych bral udzial dany kierowca
+        '''
+        drivers = [
+            Drivers.objects.get(surname=k)
+            for k in ["Vettel", "Alonso", "Leclerc", "Aitken"]
+        ]
+        races_count = [268, 324, 69, 1]
+
+        for driver, races in zip(drivers, races_count):
+            response = self.client.get(
+                reverse("history:driver_details", args=(driver.nickname, )))
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(response.context["races_count"], races)
+
+    

@@ -90,6 +90,7 @@ class DriverView(generic.DetailView):
         except Exception as e:
             context["pole_positions"] = None
 
+        #informacje o podiach
         try:
             temp = Results.objects.filter(
                 Q(driver=my_driver)
@@ -97,6 +98,14 @@ class DriverView(generic.DetailView):
             context["podiums"] = temp
         except Exception as e:
             context["podiums"] = None
+        
+        #liczba wyscigow
+        try:
+            context["races_count"] = Results.objects.filter(driver=my_driver).count()
+        except:
+            context["races_count"] = None
+        
+        
         return context
 
 
