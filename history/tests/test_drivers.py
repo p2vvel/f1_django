@@ -207,5 +207,3 @@ class TestDriversView(TestCase):
                 reverse("history:driver_details", args=(driver.nickname, )))
             self.assertEqual(response.status_code, 200)
             self.assertEqual(response.context["races_count"], races)
-
-    

@@ -241,7 +241,9 @@ class Seasons(models.Model):
         db_table = "seasons"
 
     def count_total_races(year):
-        """Returns number of races in chosen season"""
+        '''
+        Zwracam informacje na temat calkowitej liczby wyscigow w danym sezonie
+        '''
         return Races.objects \
             .filter(year=year) \
             .count()

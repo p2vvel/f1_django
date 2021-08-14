@@ -1,4 +1,6 @@
 from unittest.runner import TextTestRunner
+
+from django.http import response
 from history.tests.utils import assert_grouped_elements
 from django.urls.base import reverse
 from django.test import TestCase
@@ -84,3 +86,16 @@ class ConstructorViewTests(TestCase):
                         args=(constructor.nickname, )))
             self.assertEqual(response.status_code, 200)
             assert_grouped_elements(self, response.context["drivers"], drivers)
+
+    def test_races_count(self):
+        '''
+        Sprawdzam czy prawidlowo licze liczbe wyscigow, w ktorych wystapil dany zespol
+        '''
+        constructors = [Constructors.objects.get(name=k) for k in ["Red Bull", "AlphaTauri", "Aston Martin", "Haas F1 Team"]]#["Red Bull", "Ferrari", "AlphaTauri", "McLaren", "Aston Martin"]]
+        race_count = [314, 27, 10, 110]
+        # race_count = [313, 1017, 27, 890, 15]
+
+        for constructor, races in zip(constructors, race_count):
+            response = self.client.get(reverse("history:constructor_details", args=(constructor.nickname,)))
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(response.context["races_count"], races)

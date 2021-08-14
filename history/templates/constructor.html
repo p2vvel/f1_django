@@ -5,6 +5,11 @@
 
 <h3>{{constructor}}</h3>
 
+{% if races_count %}
+    <p>Races: {{races_count}}</p>
+{% endif %}
+
+
 {% if drivers %}
 <h3>Drivers</h3>
 <ul>

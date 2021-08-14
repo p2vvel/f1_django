@@ -98,14 +98,14 @@ class DriverView(generic.DetailView):
             context["podiums"] = temp
         except Exception as e:
             context["podiums"] = None
-        
+
         #liczba wyscigow
         try:
-            context["races_count"] = Results.objects.filter(driver=my_driver).count()
+            context["races_count"] = Results.objects.filter(
+                driver=my_driver).count()
         except:
             context["races_count"] = None
-        
-        
+
         return context
 
 
@@ -136,6 +136,13 @@ class ConstructorView(generic.DetailView):
         except Exception as e:
             context["drivers"] = []
 
+        #liczba wyscigow
+        try:
+            context["races_count"] = Results.objects.filter(
+                constructor=my_constructor).values("race").distinct().count()
+        except:
+            context["races_count"] = None
+
         return context
 
 
@@ -150,7 +157,6 @@ class CircuitView(generic.DetailView):
         context = super().get_context_data(**kwargs)
         my_circuit = context["circuit"]
         try:
-            pass
             temp = Races.objects.filter(circuit=my_circuit,
                                         results__isnull=False).distinct()
             temp = group_elements(temp,
