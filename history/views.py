@@ -142,7 +142,7 @@ class CircuitView(generic.DetailView):
         my_circuit = context["circuit"]
         try:
             pass
-            temp = Races.objects.filter(circuit=my_circuit)
+            temp = Races.objects.filter(circuit=my_circuit, results__isnull=False).distinct()
             temp = group_elements(temp,
                                   index_key=lambda x: x.year,
                                   value_key=lambda x: x)
