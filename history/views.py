@@ -163,7 +163,7 @@ class RaceView(generic.DetailView):
         context = super().get_context_data(**kwargs)
         my_race = context["race"]
 
-        # fetching results data
+        #informacje o wynikach wyscigu
         try:
             temp = Results.objects\
                 .filter(race=my_race)\
@@ -173,7 +173,7 @@ class RaceView(generic.DetailView):
         except Exception as e:
             context["results"] = []
 
-        # fetching qualifying data
+        # informacje o kwalifikacjach
         try:
             temp = Qualifying.objects\
                 .filter(race=my_race)\
