@@ -247,14 +247,19 @@ class Seasons(models.Model):
             .count()
 
     def count_races(year):
-        """Returns number of races in chosen season organised till now(now = until db update that will add race results info xd)"""
+        '''
+        Zwracam informacje na temat liczby zorganizowanych dotychczas wyscigow w danym sezonie,
+        tzn. wyscigow dla ktorych posiadam informacje o ich wynikach
+        '''
         return Races.objects \
             .filter(year=year, results__isnull=False, date__lte=datetime.now()) \
             .distinct() \
             .count()
 
     def season_finished(year):
-        """Gives info if season was finished (all planned races were already organized)"""
+        '''
+        Zwracam informacje czy sezon zostal zakonczony
+        '''
         current_year = datetime.now().year
         if year < current_year:
             return True
@@ -267,14 +272,17 @@ class Seasons(models.Model):
             return False
 
     def get_latest_race(year):
-        '''returns last (or the most recent race i have standings data for) of chosen season'''
+        '''
+        Zwracam ostatni wyscig wa danym sezonie(czyli taki z najwyzsza runda, ktory ma powiazane informacje o wynikach)
+        '''
         try:
-            last_race_standingsdata = Driverstandings.objects \
+
+            last_race = Results.objects \
                 .filter(race__year=year, race__isnull=False, race__date__lte=datetime.now()) \
                 .order_by("-race__round") \
                 .values_list("race", flat=True)
 
-            return Races.objects.get(pk=last_race_standingsdata[0])
+            return Races.objects.get(pk=last_race[0])
         except Exception as e:
             return None  # if there were no races exception is raised
 

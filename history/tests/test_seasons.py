@@ -3,8 +3,8 @@ from history.models import Seasons
 from django.urls.base import reverse
 from django.test import TestCase
 
-
 from .utils import *
+
 
 class SeasonViewTests(TestCase):
     fixtures = ["post2000db.json"]
@@ -76,6 +76,7 @@ class SeasonViewTests(TestCase):
             self.assertEqual(response.status_code, 200)
             self.assertEqual(response.context["finished"], finished)
 
+
 class SeasonViewTestsFakeData(TestCase):
     '''
     Testy napisane w celu sprawdzenia zachowania w przypadku roznych wariantow aktualnego sezonu
@@ -83,11 +84,17 @@ class SeasonViewTestsFakeData(TestCase):
     def test_races_count_finished_current_season(self):
         season = create_season(year=2021)
         circuit = create_circuit(name="Monza", nickname="monza")
+        status = create_status("Finished")
         #yapf: disable
         drivers = [
             create_driver(name="Sebastian",surname="Vettel",nickname="vettel"),
             create_driver(name="Fernando", surname="Alonso",nickname="alonso"),
             create_driver(name="Kimi", surname="Raikkonen", nickname="kimi"),
+        ]
+        constructors = [
+            create_constructor(name="Red Bull", nickname="redbull"),
+            create_constructor(name="Ferrari", nickname="ferrari"),
+            create_constructor(name="McLaren", nickname="mclaren")
         ]
         #yapf: enable
         races = []
@@ -100,11 +107,11 @@ class SeasonViewTestsFakeData(TestCase):
                             round=k + 1,
                             date=datetime.now() + timedelta(days=days[k])))
         #yapf: disable
-        driver_standings = []
+        results = []
         for k in races:
-            driver_standings.append(create_driverstandings(driver=drivers[0], race=k, points=25, position=1, wins=1))
-            driver_standings.append(create_driverstandings(driver=drivers[1], race=k, points=18, position=2, wins=0))
-            driver_standings.append(create_driverstandings(driver=drivers[2], race=k, points=15, position=3, wins=0))
+            results.append(create_result(race=k, driver=drivers[0], constructor=constructors[0], status=status)),
+            results.append(create_result(race=k, driver=drivers[1], constructor=constructors[1], status=status)),
+            results.append(create_result(race=k, driver=drivers[2], constructor=constructors[2], status=status)),
         #yapf: enable
         response = self.client.get(
             reverse("history:season_details", args=(season.year, )))
@@ -117,11 +124,17 @@ class SeasonViewTestsFakeData(TestCase):
     def test_races_count_unfinished_current_season(self):
         season = create_season(year=2021)
         circuit = create_circuit(name="Monza", nickname="monza")
+        status = create_status("Finished")
         #yapf: disable
         drivers = [
             create_driver(name="Sebastian",surname="Vettel",nickname="vettel"),
             create_driver(name="Fernando", surname="Alonso",nickname="alonso"),
             create_driver(name="Kimi", surname="Raikkonen", nickname="kimi"),
+        ]
+        constructors = [
+            create_constructor(name="Red Bull", nickname="redbull"),
+            create_constructor(name="Ferrari", nickname="ferrari"),
+            create_constructor(name="McLaren", nickname="mclaren")
         ]
         #yapf: enable
         races = []
@@ -134,11 +147,11 @@ class SeasonViewTestsFakeData(TestCase):
                             round=k + 1,
                             date=datetime.now() + timedelta(days=days[k])))
         #yapf: disable
-        driver_standings = []
+        results = []
         for k in races[:-2]:
-            driver_standings.append(create_driverstandings(driver=drivers[0], race=k, points=25, position=1, wins=1))
-            driver_standings.append(create_driverstandings(driver=drivers[1], race=k, points=18, position=2, wins=0))
-            driver_standings.append(create_driverstandings(driver=drivers[2], race=k, points=15, position=3, wins=0))
+            results.append(create_result(race=k, driver=drivers[0], constructor=constructors[0], status=status)),
+            results.append(create_result(race=k, driver=drivers[1], constructor=constructors[1], status=status)),
+            results.append(create_result(race=k, driver=drivers[2], constructor=constructors[2], status=status)),
         #yapf: enable
 
         response = self.client.get(
@@ -152,11 +165,17 @@ class SeasonViewTestsFakeData(TestCase):
     def test_races_count_unfinished_current_season2(self):
         season = create_season(year=2021)
         circuit = create_circuit(name="Monza", nickname="monza")
+        status = create_status("Finished")
         #yapf: disable
         drivers = [
             create_driver(name="Sebastian",surname="Vettel",nickname="vettel"),
             create_driver(name="Fernando", surname="Alonso",nickname="alonso"),
             create_driver(name="Kimi", surname="Raikkonen", nickname="kimi"),
+        ]
+        constructors = [
+            create_constructor(name="Red Bull", nickname="redbull"),
+            create_constructor(name="Ferrari", nickname="ferrari"),
+            create_constructor(name="McLaren", nickname="mclaren")
         ]
         #yapf: enable
         races = []
@@ -169,11 +188,11 @@ class SeasonViewTestsFakeData(TestCase):
                             round=k + 1,
                             date=datetime.now() + timedelta(days=days[k])))
         #yapf: disable
-        driver_standings = []
+        results = []
         for k in races[:1]:
-            driver_standings.append(create_driverstandings(driver=drivers[0], race=k, points=25, position=1, wins=1))
-            driver_standings.append(create_driverstandings(driver=drivers[1], race=k, points=18, position=2, wins=0))
-            driver_standings.append(create_driverstandings(driver=drivers[2], race=k, points=15, position=3, wins=0))
+            results.append(create_result(race=k, driver=drivers[0], constructor=constructors[0], status=status)),
+            results.append(create_result(race=k, driver=drivers[1], constructor=constructors[1], status=status)),
+            results.append(create_result(race=k, driver=drivers[2], constructor=constructors[2], status=status)),
         #yapf: enable
 
         response = self.client.get(
@@ -187,11 +206,17 @@ class SeasonViewTestsFakeData(TestCase):
     def test_races_count_unfinished_current_season_no_races(self):
         season = create_season(year=2021)
         circuit = create_circuit(name="Monza", nickname="monza")
+        status = create_status("Finished")
         #yapf: disable
         drivers = [
             create_driver(name="Sebastian",surname="Vettel",nickname="vettel"),
             create_driver(name="Fernando", surname="Alonso",nickname="alonso"),
             create_driver(name="Kimi", surname="Raikkonen", nickname="kimi"),
+        ]
+        constructors = [
+            create_constructor(name="Red Bull", nickname="redbull"),
+            create_constructor(name="Ferrari", nickname="ferrari"),
+            create_constructor(name="McLaren", nickname="mclaren")
         ]
         #yapf: enable
         races = []
@@ -226,11 +251,17 @@ class SeasonViewTestsFakeData(TestCase):
     def test_races_count_finished_current_season(self):
         season = create_season(year=2021)
         circuit = create_circuit(name="Monza", nickname="monza")
+        status = create_status("Finished")
         #yapf: disable
         drivers = [
             create_driver(name="Sebastian",surname="Vettel",nickname="vettel"),
             create_driver(name="Fernando", surname="Alonso",nickname="alonso"),
             create_driver(name="Kimi", surname="Raikkonen", nickname="kimi"),
+        ]
+        constructors = [
+            create_constructor(name="Red Bull", nickname="redbull"),
+            create_constructor(name="Ferrari", nickname="ferrari"),
+            create_constructor(name="McLaren", nickname="mclaren")
         ]
         #yapf: enable
         races = []
@@ -243,11 +274,11 @@ class SeasonViewTestsFakeData(TestCase):
                             round=k + 1,
                             date=datetime.now() + timedelta(days=days[k])))
         #yapf: disable
-        driver_standings = []
+        results = []
         for k in races:
-            driver_standings.append(create_driverstandings(driver=drivers[0], race=k, points=25, position=1, wins=1))
-            driver_standings.append(create_driverstandings(driver=drivers[1], race=k, points=18, position=2, wins=0))
-            driver_standings.append(create_driverstandings(driver=drivers[2], race=k, points=15, position=3, wins=0))
+            results.append(create_result(race=k, driver=drivers[0], constructor=constructors[0], status=status)),
+            results.append(create_result(race=k, driver=drivers[1], constructor=constructors[1], status=status)),
+            results.append(create_result(race=k, driver=drivers[2], constructor=constructors[2], status=status)),
         #yapf: enable
 
         response = self.client.get(

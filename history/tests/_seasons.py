@@ -6,12 +6,7 @@ from django.test import TestCase, client
 
 
 class SeasonViewTests(TestCase):
-    def test_season_view_simple(self):
-        season = create_season(year=2013)
-        response = self.client.get(
-            reverse("history:season_details", args=(season.year, )))
-        self.assertEqual(response.status_code, 200)
-
+    
     def test_races_count_finished_current_season(self):
         season = create_season(year=2021)
         circuit = create_circuit(name="Monza", nickname="monza")
