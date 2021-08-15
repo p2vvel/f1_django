@@ -108,11 +108,12 @@ class DriverView(generic.DetailView):
         except:
             context["races_count"] = None
 
+        #najwyzsza pozycja startowa i jej wystapienia dla danego kierowcy
         try:
             #0 oznacza start z pit boxow, dlatego musze to wziac pod uwage przy wyszukiwaniu najnizszej pozycji startowej
-            highest_grid = Results.objects.filter(
-                driver=my_driver,
-                grid__gt=0).aggregate(Min("grid"))["grid__min"]
+            highest_grid = Results.objects.filter(driver=my_driver,
+                                                  grid__gt=0).aggregate(
+                                                      Min("grid"))["grid__min"]
             grid_count = Results.objects.filter(driver=my_driver,
                                                 grid=highest_grid).count()
             context["highest_grid"] = {
@@ -122,6 +123,7 @@ class DriverView(generic.DetailView):
         except:
             context["highest_grid"] = None
 
+        #najlepsze miejsce w wyscigu i jego wystapienia dla danego kierowcy
         try:
             highest_position = Results.objects.filter(
                 driver=my_driver).aggregate(Min("position"))["position__min"]
@@ -170,6 +172,28 @@ class ConstructorView(generic.DetailView):
                 constructor=my_constructor).values("race").distinct().count()
         except:
             context["races_count"] = None
+
+        #najwyzsza pozycja startowa i jej wystapienia
+        try:
+            grid = Results.objects.filter(constructor=my_constructor,
+                                       grid__gt=0).aggregate(
+                                           Min("grid"))["grid__min"]
+            count = Results.objects.filter(constructor=my_constructor,
+                                        grid=grid).count()
+            context["highest_grid"] = {"grid": grid, "count": count}
+        except:
+            context["highest_grid"] = None
+
+        #najwyzsza pozycja zajeta w wyscigu i jej wystapienia
+        try:
+            position = Results.objects.filter(constructor=my_constructor).aggregate(
+                                           Min("position"))["position__min"]
+            count = Results.objects.filter(constructor=my_constructor,
+                                        position=position).count()
+            context["highest_position"] = {"position": position, "count": count}
+        except:
+            context["highest_position"] = None
+
 
         return context
 

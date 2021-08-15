@@ -10,6 +10,14 @@
 {% endif %}
 
 
+{% if highest_grid %}
+    <p>Highest starting position: {{highest_grid.grid}} (x{{highest_grid.count}})</p>
+{% endif %}
+
+{% if highest_position %}
+    <p>Highest race position: {{highest_position.grid}} (x{{highest_position.count}})</p>
+{% endif %}
+
 {% if drivers %}
 <h3>Drivers</h3>
 <ul>

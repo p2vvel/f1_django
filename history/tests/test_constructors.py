@@ -91,11 +91,70 @@ class ConstructorViewTests(TestCase):
         '''
         Sprawdzam czy prawidlowo licze liczbe wyscigow, w ktorych wystapil dany zespol
         '''
-        constructors = [Constructors.objects.get(name=k) for k in ["Red Bull", "AlphaTauri", "Aston Martin", "Haas F1 Team"]]#["Red Bull", "Ferrari", "AlphaTauri", "McLaren", "Aston Martin"]]
+        constructors = [
+            Constructors.objects.get(name=k) for k in
+            ["Red Bull", "AlphaTauri", "Aston Martin", "Haas F1 Team"]
+        ]  #["Red Bull", "Ferrari", "AlphaTauri", "McLaren", "Aston Martin"]]
         race_count = [314, 27, 10, 110]
         # race_count = [313, 1017, 27, 890, 15]
 
         for constructor, races in zip(constructors, race_count):
-            response = self.client.get(reverse("history:constructor_details", args=(constructor.nickname,)))
+            response = self.client.get(
+                reverse("history:constructor_details",
+                        args=(constructor.nickname, )))
             self.assertEqual(response.status_code, 200)
             self.assertEqual(response.context["races_count"], races)
+
+    def test_highest_grid(self):
+        '''
+        Sprawdzam czy poprawnie pobieram informacje na temat najwyzszego miejsca startowego (i ilosci jego wystapien)
+        '''
+        constructors = [
+            Constructors.objects.get(name__contains=k)
+            for k in ("Red Bull", "AlphaTauri", "Haas", "Force India",
+                      "Alpine")
+        ]
+
+        #jesli bedzie wywalac blad ze przy red bullu, to wina zrzutu bazy danych
+        #gosc potraktowal zwyciestwo hamiltona w qualach jako startowanie z pierwszego miejsca,
+        #mimo ze potem przerznal z verstappenem w spirncie kwalifikacyjnym
+        #oficjalne dane na ten moment mowia o 68 PP dla Redbulla, baza danych powoduje ze jest to 67 :()
+        temp = ((1, 67), (4, 2), (5, 7), (1, 1), (5, 1))
+
+        highest_grid = [{
+            "grid": grid,
+            "count": count
+        } for (grid, count) in temp]
+
+        for constructor, grid in zip(constructors, highest_grid):
+            response = self.client.get(
+                reverse("history:constructor_details",
+                        args=(constructor.nickname, )))
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(response.context["highest_grid"], grid)
+
+    def test_highest_position(self):
+        '''
+        Sprawdzam czy prawidlowo pobieram informacje na temat najwyzszego zajetego miejsca w wyscigu
+        '''
+        constructors = [
+            Constructors.objects.get(name__contains=k)
+            for k in ("Red Bull", "AlphaTauri", "Haas", "Force India",
+                      "Alpine")
+        ]
+
+        #porownujac  zdanymi z formula1.com patrz na to ze traktuja 
+        # np. Renault+Alpine i Toro Rosso+Alpha Tauri jako jeden zespol, 
+        #co za tym idzie, nie "resetuja im dokonan"
+        temp = ((1, 70), (1, 1), (4, 1), (2, 1), (6, 1))
+        highest_position = [{
+            "position": position,
+            "count": count
+        } for (position, count) in temp]
+
+        for constructor, position in zip(constructors, highest_position):
+            response = self.client.get(
+                reverse("history:constructor_details",
+                        args=(constructor.nickname, )))
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(response.context["highest_position"], position)
