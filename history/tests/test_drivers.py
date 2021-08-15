@@ -207,3 +207,37 @@ class TestDriversView(TestCase):
                 reverse("history:driver_details", args=(driver.nickname, )))
             self.assertEqual(response.status_code, 200)
             self.assertEqual(response.context["races_count"], races)
+
+    def test_highest_grid(self):
+        '''
+        Sprawdzam czy prawidlowo pobieram najwyzsza pozycje startowa i liczbe jej wystapien
+        '''
+        drivers = [
+            Drivers.objects.get(surname=k)
+            for k in ("Vettel", "Alonso", "Leclerc", "Aitken", "Norris")
+        ]
+
+        highest_grid = [{"grid": grid, "count": count} for (grid, count) in ((1, 57), (1, 22), (1, 9), (17, 1), (2, 1))]
+
+        for driver, grid in zip(drivers, highest_grid):
+            response = self.client.get(
+                reverse("history:driver_details", args=(driver.nickname, )))
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(response.context["highest_grid"], grid)
+
+    def test_highest_position(self):
+        '''
+        Sprawdzam czy prawidlowo pobieram najwyzsza pozycje w wyscigu i liczbe jej wystapien
+        '''
+        drivers = [
+            Drivers.objects.get(surname=k)
+            for k in ("Vettel", "Alonso", "Leclerc", "Aitken", "Norris")
+        ]
+
+        highest_position = [{"position": position, "count": count} for (position, count) in ((1, 53), (1, 32), (1, 2), (16, 1), (3, 4))]
+
+        for driver, position in zip(drivers, highest_position):
+            response = self.client.get(
+                reverse("history:driver_details", args=(driver.nickname, )))
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(response.context["highest_position"], position)

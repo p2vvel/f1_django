@@ -11,6 +11,8 @@ from .models import Circuits, Constructors, Constructorstandings, Drivers, Drive
 
 from .utils import group_elements
 
+from django.db.models import Min
+
 from django.db.models import Q
 
 
@@ -105,6 +107,32 @@ class DriverView(generic.DetailView):
                 driver=my_driver).count()
         except:
             context["races_count"] = None
+
+        try:
+            #0 oznacza start z pit boxow, dlatego musze to wziac pod uwage przy wyszukiwaniu najnizszej pozycji startowej
+            highest_grid = Results.objects.filter(
+                driver=my_driver,
+                grid__gt=0).aggregate(Min("grid"))["grid__min"]
+            grid_count = Results.objects.filter(driver=my_driver,
+                                                grid=highest_grid).count()
+            context["highest_grid"] = {
+                "grid": highest_grid,
+                "count": grid_count
+            }
+        except:
+            context["highest_grid"] = None
+
+        try:
+            highest_position = Results.objects.filter(
+                driver=my_driver).aggregate(Min("position"))["position__min"]
+            position_count = Results.objects.filter(
+                driver=my_driver, position=highest_position).count()
+            context["highest_position"] = {
+                "position": highest_position,
+                "count": position_count
+            }
+        except:
+            context["highest_position"] = None
 
         return context
 

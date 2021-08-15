@@ -29,6 +29,16 @@
     <p>Races: {{races_count}}</p>
 {% endif %}
 
+
+{% if highest_position %}
+    <p>Highest race finish: {{highest_position.position}} (x {{highest_position.count}})</p>
+{% endif %}
+
+{% if highest_grid %}
+    <p>Highest race finish: {{highest_grid.grid}} (x {{highest_grid.count}})</p>
+{% endif %}
+
+
 {% if wins %}
     <p>Wins: {{wins}}</p>
 {% endif %}
