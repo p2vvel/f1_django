@@ -176,24 +176,27 @@ class ConstructorView(generic.DetailView):
         #najwyzsza pozycja startowa i jej wystapienia
         try:
             grid = Results.objects.filter(constructor=my_constructor,
-                                       grid__gt=0).aggregate(
-                                           Min("grid"))["grid__min"]
+                                          grid__gt=0).aggregate(
+                                              Min("grid"))["grid__min"]
             count = Results.objects.filter(constructor=my_constructor,
-                                        grid=grid).count()
+                                           grid=grid).count()
             context["highest_grid"] = {"grid": grid, "count": count}
         except:
             context["highest_grid"] = None
 
         #najwyzsza pozycja zajeta w wyscigu i jej wystapienia
         try:
-            position = Results.objects.filter(constructor=my_constructor).aggregate(
-                                           Min("position"))["position__min"]
+            position = Results.objects.filter(
+                constructor=my_constructor).aggregate(
+                    Min("position"))["position__min"]
             count = Results.objects.filter(constructor=my_constructor,
-                                        position=position).count()
-            context["highest_position"] = {"position": position, "count": count}
+                                           position=position).count()
+            context["highest_position"] = {
+                "position": position,
+                "count": count
+            }
         except:
             context["highest_position"] = None
-
 
         return context
 
@@ -268,14 +271,16 @@ class SeasonView(DetailView):
 
         #kierowcy i konstruktorzy
         if last_race:
+            #kierowcy
             try:
                 temp = Driverstandings.objects\
                         .filter(race=last_race)\
                         .order_by("position")
+
                 context["drivers"] = temp
             except Exception as e:
                 context["drivers"] = []
-
+            #konstruktorzy
             try:
                 temp = Constructorstandings.objects\
                     .filter(race=last_race)\
@@ -286,6 +291,19 @@ class SeasonView(DetailView):
         else:
             context["drivers"] = []
             context["constructors"] = []
+
+        if context["drivers"]:
+            try:
+                temp = []
+                for driver in [k.driver for k in context["drivers"]]:
+                    temp.append(
+                        Results.objects.filter(
+                            race__year=my_season.year,
+                            driver=driver).order_by("race__round"))
+
+                context["drivers_classification"] = temp
+            except:
+                context["drivers_classification"] = None
 
         #liczba wyscigow(dotychczasowych i calkowita) i o zakonczeniu sezonu
         try:

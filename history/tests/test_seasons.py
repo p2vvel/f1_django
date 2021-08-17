@@ -84,10 +84,11 @@ class SeasonViewTests(TestCase):
 
         for k in range(1, len(seasons)):
             response = self.client.get(
-                reverse("history:season_details", args=(seasons[k - 1].year, )))
+                reverse("history:season_details",
+                        args=(seasons[k - 1].year, )))
             self.assertEqual(response.status_code, 200)
             self.assertEqual(response.context["next_season"], seasons[k])
-    
+
     def test_previous_season(self):
         '''
         Sprawdzam czy porpawnie pobieram informacje o poprzednim sezonie(przy ostatnim w bazie ma nic nie byc)
@@ -98,7 +99,91 @@ class SeasonViewTests(TestCase):
             response = self.client.get(
                 reverse("history:season_details", args=(seasons[k].year, )))
             self.assertEqual(response.status_code, 200)
-            self.assertEqual(response.context["previous_season"], seasons[k-1])
+            self.assertEqual(response.context["previous_season"],
+                             seasons[k - 1])
+
+    def test_drivers(self):
+        '''
+        Sprawdzam czy prawidlowo pobieram informacje o kierowcach
+        '''
+        season_2013 = Seasons.objects.get(year=2013)
+        drivers_names_2013 = (("Sebastian", "Vettel"), ("Fernando", "Alonso"),
+                              ("Mark", "Webber"), ("Lewis", "Hamilton"),
+                              ("Kimi", "Räikkönen"), ("Nico", "Rosberg"),
+                              ("Romain", "Grosjean"), ("Felipe", "Massa"),
+                              ("Jenson", "Button"), ("Nico", "Hülkenberg"),
+                              ("Sergio", "Pérez"), ("Paul", "di Resta"),
+                              ("Adrian", "Sutil"), ("Daniel",
+                                                    "Ricciardo"), ("Jean-Éric",
+                                                                   "Vergne"),
+                              ("Esteban", "Gutiérrez"), ("Valtteri", "Bottas"),
+                              ("Pastor", "Maldonado"), ("Jules", "Bianchi"),
+                              ("Charles", "Pic"), ("Giedo", "van der Garde"),
+                              ("Heikki", "Kovalainen"), ("Max", "Chilton"))
+
+        drivers_2013 = [
+            Drivers.objects.get(surname=surname, name=name)
+            for (name, surname) in drivers_names_2013
+        ]
+
+        season_2021 = Seasons.objects.get(year=2021)
+        drivers_names_2021 = (("Max", "Verstappen"), ("Lewis", "Hamilton"),
+                              ("Lando", "Norris"), ("Valtteri", "Bottas"),
+                              ("Sergio", "Pérez"), ("Charles", "Leclerc"),
+                              ("Carlos", "Sainz"), ("Daniel", "Ricciardo"),
+                              ("Pierre", "Gasly"), ("Sebastian", "Vettel"),
+                              ("Fernando", "Alonso"), ("Lance", "Stroll"),
+                              ("Esteban", "Ocon"), ("Yuki", "Tsunoda"),
+                              ("Kimi", "Räikkönen"), ("Antonio", "Giovinazzi"),
+                              ("George", "Russell"), ("Mick", "Schumacher"),
+                              ("Nicholas", "Latifi"), ("Nikita", "Mazepin"))
+
+        drivers_2021 = [
+            Drivers.objects.get(surname=surname, name=name)
+            for (name, surname) in drivers_names_2021
+        ]
+
+        for season, drivers in ((season_2013, drivers_2013), (season_2021,
+                                                              drivers_2021)):
+            response = self.client.get(
+                reverse("history:season_details", args=(season.year, )))
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual([k.driver for k in response.context["drivers"]],
+                             drivers)
+
+    def test_constructors(self):
+        '''
+        Sprawdzam czy prawidlowo pobieram informacje o konstruktorach
+        '''
+        season_2013 = Seasons.objects.get(year=2013)
+        constructors_names_2013 = ("Red Bull", "Mercedes", "Ferrari",
+                                   "Lotus F1", "McLaren", "Force India",
+                                   "Sauber", "Toro Rosso", "Williams",
+                                   "Marussia", "Caterham")
+
+        constructors_2013 = [
+            Constructors.objects.get(name=name)
+            for name in constructors_names_2013
+        ]
+
+        season_2021 = Seasons.objects.get(year=2021)
+        constructors_names_2021 = ("Red Bull", "Mercedes", "McLaren",
+                                   "Ferrari", "AlphaTauri", "Aston Martin",
+                                   "Alpine F1 Team", "Alfa Romeo", "Williams",
+                                   "Haas F1 Team")
+        constructors_2021 = [
+            Constructors.objects.get(name=name)
+            for name in constructors_names_2021
+        ]
+
+        for season, constructors in ((season_2013, constructors_2013),
+                                     (season_2021, constructors_2021)):
+            response = self.client.get(
+                reverse("history:season_details", args=(season.year, )))
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(
+                [k.constructor for k in response.context["constructors"]],
+                constructors)
 
 
 class SeasonViewTestsFakeData(TestCase):
