@@ -26,6 +26,44 @@
 {% endif %}
 
 
+
+
+{% if drivers_classification %}
+
+<table>
+    <tr>
+    <td>
+        Driver
+    </td>
+    {% for race in races %}
+        <th>
+            <a href={%url "history:race_details" pk=race.pk %}> {{race.circuit.country}}</a>
+        </th>
+    {% endfor %}
+    </tr>
+    {% for driver, driver_races in drivers_classification %}
+    <tr>
+        <th>
+            <a href={% url "history:driver_details" nick=driver.nickname %}>{{driver}}</a>
+        </th>
+        {% for race in driver_races %}
+            {% if race %}
+                <td>{{race.position_info}}</td>
+            {% else %}
+                <td>-</td>
+            {% endif %}            
+        {% endfor %}
+    </tr>
+    {% endfor %}
+</table>
+
+{% endif %}
+
+
+
+
+
+
 {% if drivers %}
     <h3>Drivers</h3>
     <table>
@@ -69,7 +107,7 @@
             </td>
             <td>
                 <a href={%url "history:constructor_details" nick=k.constructor.nickname %}>
-                    {{k.constructor}}
+                    {{k.constructor.name}}
                 </a>
             </td>
             <td>

@@ -9,7 +9,7 @@ from django.views import generic
 from django.views.generic.detail import DetailView
 from .models import Circuits, Constructors, Constructorstandings, Drivers, Driverstandings, Qualifying, Races, Results, Seasons
 
-from .utils import group_elements
+from .utils import group_elements, fill_empty_races
 
 from django.db.models import Min
 
@@ -266,45 +266,6 @@ class SeasonView(DetailView):
         context = super().get_context_data(**kwargs)
         my_season = context["season"]
 
-        #informacje o miejscach w stawce sa grupowane wg ostatniego odbytego wyscigu
-        last_race = Seasons.get_latest_race(year=my_season.year)
-
-        #kierowcy i konstruktorzy
-        if last_race:
-            #kierowcy
-            try:
-                temp = Driverstandings.objects\
-                        .filter(race=last_race)\
-                        .order_by("position")
-
-                context["drivers"] = temp
-            except Exception as e:
-                context["drivers"] = []
-            #konstruktorzy
-            try:
-                temp = Constructorstandings.objects\
-                    .filter(race=last_race)\
-                    .order_by("position")
-                context["constructors"] = temp
-            except Exception as e:
-                context["constructors"] = []
-        else:
-            context["drivers"] = []
-            context["constructors"] = []
-
-        if context["drivers"]:
-            try:
-                temp = []
-                for driver in [k.driver for k in context["drivers"]]:
-                    temp.append(
-                        Results.objects.filter(
-                            race__year=my_season.year,
-                            driver=driver).order_by("race__round"))
-
-                context["drivers_classification"] = temp
-            except:
-                context["drivers_classification"] = None
-
         #liczba wyscigow(dotychczasowych i calkowita) i o zakonczeniu sezonu
         try:
             context["finished"] = Seasons.season_finished(my_season.year)
@@ -328,5 +289,56 @@ class SeasonView(DetailView):
                 year=my_season.year - 1)
         except:
             context["previous_season"] = None
+
+        #informacje o miejscach w stawce sa grupowane wg ostatniego odbytego wyscigu
+        if (last_race := Seasons.get_latest_race(year=my_season.year)):
+            #kierowcy
+            try:
+                temp = Driverstandings.objects\
+                        .filter(race=last_race)\
+                        .order_by("position")
+
+                context["drivers"] = temp
+            except Exception as e:
+                context["drivers"] = []
+            #konstruktorzy
+            try:
+                temp = Constructorstandings.objects\
+                    .filter(race=last_race)\
+                    .order_by("position")
+                context["constructors"] = temp
+            except Exception as e:
+                context["constructors"] = []
+        else:
+            context["drivers"] = []
+            context["constructors"] = []
+
+        #wyscigi
+        try:
+            context["races"] = Races.objects.filter(
+                year=my_season.year).order_by("round")
+        except:
+            context["races"] = None
+
+        if context["drivers"] and context["organized_races"]:
+            try:
+                temp = []
+                for driver in [k.driver for k in context["drivers"]]:
+                    temp.append([
+                        driver,
+                        Results.objects.filter(
+                            race__year=my_season.year,
+                            driver=driver).order_by("race__round")
+                    ])
+
+                for index, races in enumerate(temp):
+                    temp[index][1] = fill_empty_races(races[1], context["organized_races"])
+
+                # context["drivers_classification"] = map(
+                #     lambda x: fill_empty_races(x[1], context["organized_races"]
+                #                                ), temp)
+                context["drivers_classification"] = temp
+            except:
+                context["drivers_classification"] = None
 
         return context

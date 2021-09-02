@@ -185,6 +185,49 @@ class SeasonViewTests(TestCase):
                 [k.constructor for k in response.context["constructors"]],
                 constructors)
 
+    def test_races(self):
+        '''
+        Sprawdzam poprawnosc pobierania informacji o wyscigach w danym sezonie 
+        '''
+        season_2013 = Seasons.objects.get(year=2013)
+        races_name_2013 = ("Australian Grand Prix", "Malaysian Grand Prix",
+                           "Chinese Grand Prix", "Bahrain Grand Prix",
+                           "Spanish Grand Prix", "Monaco Grand Prix",
+                           "Canadian Grand Prix", "British Grand Prix",
+                           "German Grand Prix", "Hungarian Grand Prix",
+                           "Belgian Grand Prix", "Italian Grand Prix",
+                           "Singapore Grand Prix", "Korean Grand Prix",
+                           "Japanese Grand Prix", "Indian Grand Prix",
+                           "Abu Dhabi Grand Prix", "United States Grand Prix",
+                           "Brazilian Grand Prix")
+        races_2013 = [
+            Races.objects.get(year=2013, name=k) for k in races_name_2013
+        ]
+
+        season_2021 = Seasons.objects.get(year=2021)
+        races_name_2021 = ("Australian Grand Prix", "Bahrain Grand Prix",
+                           "Emilia Romagna Grand Prix",
+                           "Portuguese Grand Prix", "Spanish Grand Prix",
+                           "Monaco Grand Prix", "Azerbaijan Grand Prix",
+                           "Styrian Grand Prix", "French Grand Prix",
+                           "Austrian Grand Prix", "British Grand Prix",
+                           "Hungarian Grand Prix", "Belgian Grand Prix",
+                           "Dutch Grand Prix", "Italian Grand Prix",
+                           "Russian Grand Prix", "Turkish Grand Prix",
+                           "Japanese Grand Prix", "United States Grand Prix",
+                           "Mexico City Grand Prix", "Brazilian Grand Prix",
+                           "Saudi Arabian Grand Prix", "Abu Dhabi Grand Prix")
+        races_2021 = [
+            Races.objects.get(year=2021, name=k) for k in races_name_2021
+        ]
+
+        for season, races in ((season_2013, races_2013), (season_2021,
+                                                          races_2021)):
+            response = self.client.get(
+                reverse("history:season_details", args=[season.year]))
+            self.assertEqual(response.status_code, 200)
+            self.assertCountEqual(response.context["races"], races)
+
 
 class SeasonViewTestsFakeData(TestCase):
     '''
