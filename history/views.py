@@ -1,5 +1,7 @@
+from datetime import datetime
 from django import template
-from django.shortcuts import render
+from django.db.models.aggregates import Count
+from django.shortcuts import redirect, render
 from django.shortcuts import get_object_or_404
 from django.template import context
 from django.urls.base import reverse
@@ -15,6 +17,15 @@ from django.db.models import Min
 
 from django.db.models import Q
 
+
+
+def index(request):
+    current_year = datetime.now().year
+    #jesli sezon sie jeszcze nie zaczal, bede wyswietlac informacje o starym sezonie
+    if Seasons.count_races(year=current_year) == 0:
+        current_year -= 1
+
+    return redirect(reverse("history:season_details", args=(current_year,)))
 
 class DriverView(generic.DetailView):
     model = Drivers

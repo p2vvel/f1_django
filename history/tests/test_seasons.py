@@ -229,6 +229,16 @@ class SeasonViewTests(TestCase):
             self.assertCountEqual(response.context["races"], races)
 
 
+    def test_index_site(self):
+        '''Sprwadzam czy poprawnie przekieruje na aktualny sezon'''
+        season_21 = Seasons.objects.get(year=2021)
+        response = self.client.get(reverse("history:index"))
+        self.assertEqual(response.status_code, 302) #sprwadzam czy przekierowuje
+        self.assertEqual(response["Location"], reverse("history:season_details", args=(2021,)))
+
+
+
+
 class SeasonViewTestsFakeData(TestCase):
     '''
     Testy napisane w celu sprawdzenia zachowania w przypadku roznych wariantow aktualnego sezonu
@@ -440,3 +450,4 @@ class SeasonViewTestsFakeData(TestCase):
         self.assertEqual(Seasons.count_total_races(2021), 7)
         self.assertEqual(Seasons.season_finished(2021), True)
         self.assertEqual(Seasons.get_latest_race(2021), races[-1])
+

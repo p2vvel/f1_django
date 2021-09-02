@@ -22,5 +22,4 @@ def fill_empty_races(races:list, races_count: int) -> list:
         fill = [None] * (races_count - len(races))
         for race in races:
             fill.insert(race.race.round - 1, race)
-        print(fill)
         return fill
