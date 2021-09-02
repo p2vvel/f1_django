@@ -27,6 +27,7 @@ def index(request):
 
     return redirect(reverse("history:season_details", args=(current_year,)))
 
+
 class DriverView(generic.DetailView):
     model = Drivers
     context_object_name = "driver"

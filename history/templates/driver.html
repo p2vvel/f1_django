@@ -2,14 +2,12 @@
 
 {% block content %}
 
-<h2>
-    {{driver}}
-</h2>
 {% if driver.wiki_url %}
     <h3><a href="{{driver.wiki_url}}">{{driver.name}} {{driver.surname}}</a></h3>
 {% else %}
     <h3>{{driver.name}} {{driver.surname}}</h3>
 {% endif %}
+
 {% if driver.code %}
     <p>Code: {{driver.code}}</p>
 {% endif %}
