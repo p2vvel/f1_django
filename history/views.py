@@ -367,3 +367,9 @@ class SeasonsListView(ListView):
     template_name = "seasons_list.html"
     ordering = "-year"
     paginate_by = 10
+
+class DriversListView(ListView):
+    model = Drivers
+    context_object_name = "drivers"
+    template_name = "drivers_list.html"
+    # paginate_by = 50

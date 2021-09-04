@@ -5,27 +5,34 @@
 <div class="row">
 <div class="col">
 
-<h2>Seasons</h2>
+<h2>Drivers</h2>
 
-{% comment %} <div class="container-fluid"> {% endcomment %}
+
+{% comment %} 
 <div class="row">
 {% for season in seasons %}
     <div class="col-12 col-md-6">
         <div class="card m-1">
             <div class="card-body d-flex justify-content-between">
             <h4 class="card-title">{{season.year}}</h4>
-            {% comment %} <p class="card-text">With supporting text below as a natural lead-in to additional content.</p> {% endcomment %}
             <a href={% url "history:season_details" pk=season.year %} class="btn btn-outline-secondary stretched-link">View</a>
             </div>
         </div>
     </div>
 {% endfor %}
 </div>
-{% comment %} </div> {% endcomment %}
+{% endcomment %}
 
 
 
+<div class="row">
+{% for driver in drivers %}
+    <p><a href={%url "history:driver_details" nick=driver.nickname%}>{{driver}}</a></p>
+{% endfor %}
+</div>
 
+
+{% comment %} 
 <div class="row">
 <div class="col d-flex justify-content-center my-3">
     <nav aria-label="Page navigation example">
@@ -43,7 +50,7 @@
     </ul>
     </nav>
 </div>
-</div>
+</div> {% endcomment %}
 
 
 </div>
