@@ -18,22 +18,31 @@
     <p>Highest race position: {{highest_position.grid}} (x{{highest_position.count}})</p>
 {% endif %}
 
+
 {% if drivers %}
 <h3>Drivers</h3>
-<ul>
+<table class="table table-hover table-bordered">
+    <tr class="table-secondary">
+        <th>Year</th> 
+        <th>Drivers</th> 
+    </tr>
     {% for year, drivers in drivers %}
-        <li>
-        {{year}} - 
-        {% for k in drivers %}
-            {% if forloop.last %}
-                <a href = {% url 'history:driver_details' nick=k.nickname %}>{{k.name}} {{k.surname}}</a> 
-            {% else %}
-                <a href = {% url 'history:driver_details' nick=k.nickname %}>{{k.name}} {{k.surname}}</a>, 
-            {% endif %}
-        {% endfor %}
-        </li>
+        <tr>
+            <td>
+                {{year}}
+            </td>
+            <td class="p-0">
+                <ul class="list-group list-group-flush">
+                    {% for k in drivers %}
+                        <li class="list-group-item">
+                            <a href = {% url 'history:driver_details' nick=k.nickname %}>{{k.name}} {{k.surname}}</a> 
+                        </li>
+                    {% endfor %}
+                </ul>
+            </td>
+        </tr>
     {% endfor %}
-</ul>
+</table>
 {% endif %}
 
 

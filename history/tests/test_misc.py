@@ -2,6 +2,7 @@ from datetime import date, datetime, timedelta
 import unittest
 from unittest import result
 from django.db.models import constraints
+from django.http import response
 from django.test import TestCase, client
 from django.test.testcases import TransactionTestCase
 from django.urls.base import reverse
@@ -10,6 +11,21 @@ from django.utils import timezone
 # importing all create_* functions
 from .utils import *
 from history.utils import group_elements
+from history.templatetags.my_tags import get_country_flag_url
+
+
+class TestCountryImages(TestCase):
+    def test_flags(self):
+        '''Sprwadzam czy poprawnei pobieram flagi dla kazdego z panstw, w ktorych sa tory'''
+
+        countries = Circuits.objects.all().values_list("country", flat=True).distinct()
+
+        urls = [get_country_flag_url(country) for country in countries]
+
+        for country in urls:
+            response = self.client.get(country)
+            self.assertEqual(response.status_code, 200)
+
 
 
 class TestGrouping(TestCase):

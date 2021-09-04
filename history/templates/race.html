@@ -7,55 +7,79 @@
 {% block content %}
 
 
-<h3>{{race.year}} {{race.name}}</h3>
+{% if race.wiki_url %}
+    <h3><a href={{race.wiki_url}}>{{race.year}} {{race.name}}</a></h3>
+{% else %}
+    <h3>{{race.year}} {{race.name}}</h3>
+{% endif %}
 
+{% if race.date %}
+    <h5>Date: {{race.date}}</h5>
+{% endif %}
 
-{% if results %}
-{% with render_laptimes=results|any_laptime %}
-<h5>Results:</h5>
-<table>
-    <tr>
-        <th>No.</th>
-        <th>Driver</th>
-        <th>Constructor</th>
-        <th>Status</th>
-        <th>Position</th>
-        <th>Laps</th>
-        {% if render_laptimes %}
-        <th>Fastest Lap</th>
-        <th>Fastest Lap Time</th>
-        <th>Fastest Lap Ranking</th>
-        {% endif %}
-        <th>Points</th>
-    </tr>
-    {% for k in results %}
-    <tr>
-        <td>{{k.position_order|default_if_none:"-"}}</td>
-        <td><a href={% url "history:driver_details" nick=k.driver.nickname %}>{{k.driver}}</a></td>
-        <td><a href={% url "history:constructor_details" nick=k.constructor.nickname %}>{{k.constructor}}</a></td>
-        <td>{{k.status|default_if_none:"-"}}</td>
-        <td>{{k.position|default_if_none:"-"}}</td>
-        <td>{{k.laps}}</td>
-        {% if render_laptimes %}
-        
-        <td>{{k.fastest_lap|default_if_none:"-"}}</td>
-        <td>{{k.fastest_laptime|default_if_none:"-"}}</td>
-        <td>{{k.rank|default_if_none:"-"}}</td>
-        {% endif %}
-        <td>{{k.points|floatformat}}</td>
-    </tr>
-    {% endfor %}
-</table>
-{% endwith %}
+{% if race.round %}
+    <h5>Season: <a href={%url "history:season_details" pk=race.year %}>{{race.year}}</a></h5>
+{% endif %}
+
+{% if race.round %}
+    <h5>Round: {{race.round}}</h5>
 {% endif %}
 
 
+{% if race.circuit %}
+    <h5>Circuit: <a href="{% url "history:circuit_details" nick=race.circuit.nickname %}">{{race.circuit}}</a> </h5>
+{% endif %}
+
+
+<div class="row">
+<div class="col">
+    {% if results %}
+    {% with render_laptimes=results|any_laptime %}
+    <h4>Results:</h4>
+    <table class="table table-hover table-bordered">
+        <tr class="table-secondary">
+            <th>No.</th>
+            <th>Driver</th>
+            <th>Constructor</th>
+            <th>Status</th>
+            <th>Position</th>
+            <th>Laps</th>
+            {% if render_laptimes %}
+            <th>Fastest Lap</th>
+            <th>Fastest Lap Time</th>
+            <th>Fastest Lap Ranking</th>
+            {% endif %}
+            <th>Points</th>
+        </tr>
+        {% for k in results %}
+        <tr>
+            <td>{{k.position_order|default_if_none:"-"}}</td>
+            <td><a href={% url "history:driver_details" nick=k.driver.nickname %}>{{k.driver}}</a></td>
+            <td><a href={% url "history:constructor_details" nick=k.constructor.nickname %}>{{k.constructor}}</a></td>
+            <td>{{k.status|default_if_none:"-"}}</td>
+            <td>{{k.position|default_if_none:"-"}}</td>
+            <td>{{k.laps}}</td>
+            {% if render_laptimes %}
+                <td>{{k.fastest_lap|default_if_none:"-"}}</td>
+                <td>{{k.fastest_laptime|default_if_none:"-"}}</td>
+                <td>{{k.rank|default_if_none:"-"}}</td>
+            {% endif %}
+            <td>{{k.points|floatformat}}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% endwith %}
+    {% endif %}
+</div>
+</div>
+
+
 {% if qualifying %}
-<h5>Qualifying</h5>
+<h4>Qualifying</h4>
     {% with render_all_q=qualifying|all_q %}
     {% with render_only_q1=qualifying|only_q1 %}
-        <table>
-            <tr>
+        <table class="table table-hover table-bordered">
+            <tr class="table-secondary">
                 <th>Position</th>
                 <th>Driver</th>
                 <th>Constructor</th>

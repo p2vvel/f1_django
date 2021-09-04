@@ -41,7 +41,7 @@
     <p>Wins: {{wins}}</p>
 {% endif %}
 {% if podiums %}
-    <p>Wins: {{podiums}}</p>
+    <p>Podiums: {{podiums}}</p>
 {% endif %}
 
 {% if pole_positions %}
@@ -73,23 +73,34 @@
 
 {%if teams %}
 <h3>Teams:</h3>
-<ul>
+
+<div class="row">
+<div class="col">
+<table class="table table-hover table-bordered">
+    <tr class="table-secondary ">
+        <th>Year</th>
+        <th>Teams</th>
+
+    </tr>
     {% for year, teams in  teams %}
-        <li>
-            {{year}} - 
-            {% for k in teams %}
-                {% if forloop.last %}
-                    {% comment %} {{k.nickname}} {% endcomment %}
-                    <a href = {% url 'history:constructor_details' nick=k.nickname %}>{{k.name}}</a> 
-                {% else %}
-                    {% comment %} {{k.nickname}} {% endcomment %}
-                    <a href = {% url 'history:constructor_details' nick=k.nickname %}>{{k.name}}</a>, 
-                {% endif %}
-            {% endfor %}
-            {% comment %} <a href = {% url 'history:constructor_details' nick=k.team.nickname %}>{{k.team}}</a> - {{k.year}} {% endcomment %}
-        </li>
+    <tr>
+        <td>
+            {{year}}
+        </td>
+        <td class="p-0"> 
+            <ul class="list-group list-group-flush">
+                {% for k in teams %}
+                    <li class="list-group-item">
+                        <a href = {% url 'history:constructor_details' nick=k.nickname %}>{{k.name}}</a> 
+                    </li>
+                {% endfor %}
+            </ul>
+        </td>
+    </tr>
     {% endfor %}
-</ul>
+</table>
+</div>
+</div>
 {% endif %}
 
 

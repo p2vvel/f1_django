@@ -25,5 +25,6 @@ urlpatterns = [
     path("circuit/<slug:nick>", views.CircuitView.as_view(), name="circuit_details"),
     #easier to find race by id rather than making slugs for every race
     path("race/<int:pk>", views.RaceView.as_view(), name="race_details"),
-    path("season/<int:pk>", views.SeasonView.as_view(), name="season_details")
+    path("season/<int:pk>", views.SeasonView.as_view(), name="season_details"),
+    path("seasons/", views.SeasonsListView.as_view(), name="seasons_list"),
 ]

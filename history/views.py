@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import List
 from django import template
 from django.db.models.aggregates import Count
 from django.shortcuts import redirect, render
@@ -16,6 +17,8 @@ from .utils import group_elements, fill_empty_races
 from django.db.models import Min
 
 from django.db.models import Q
+
+from django.views.generic.list import ListView
 
 
 
@@ -354,3 +357,13 @@ class SeasonView(DetailView):
                 context["drivers_classification"] = None
 
         return context
+
+
+
+
+class SeasonsListView(ListView):
+    model = Seasons
+    context_object_name = "seasons"
+    template_name = "seasons_list.html"
+    ordering = "-year"
+    paginate_by = 10
