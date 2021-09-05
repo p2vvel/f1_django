@@ -1,10 +1,6 @@
 from datetime import datetime
-from typing import List
-from django import template
-from django.db.models.aggregates import Count
+from django.http.response import Http404, HttpResponse
 from django.shortcuts import redirect, render
-from django.shortcuts import get_object_or_404
-from django.template import context
 from django.urls.base import reverse
 
 # Create your views here.
@@ -14,11 +10,11 @@ from .models import Circuits, Constructors, Constructorstandings, Drivers, Drive
 
 from .utils import group_elements, fill_empty_races
 
-from django.db.models import Min
-
-from django.db.models import Q
-
+from django.db.models import Min, Q
 from django.views.generic.list import ListView
+from django.db.models.functions import Substr
+
+from django.core.paginator import Paginator
 
 
 
@@ -28,7 +24,7 @@ def index(request):
     if Seasons.count_races(year=current_year) == 0:
         current_year -= 1
 
-    return redirect(reverse("history:season_details", args=(current_year,)))
+    return redirect(reverse("history:season_details", args=(current_year, )))
 
 
 class DriverView(generic.DetailView):
@@ -347,7 +343,8 @@ class SeasonView(DetailView):
                     ])
 
                 for index, races in enumerate(temp):
-                    temp[index][1] = fill_empty_races(races[1], context["organized_races"])
+                    temp[index][1] = fill_empty_races(
+                        races[1], context["organized_races"])
 
                 # context["drivers_classification"] = map(
                 #     lambda x: fill_empty_races(x[1], context["organized_races"]
@@ -358,9 +355,6 @@ class SeasonView(DetailView):
 
         return context
 
-
-
-
 class SeasonsListView(ListView):
     model = Seasons
     context_object_name = "seasons"
@@ -368,8 +362,57 @@ class SeasonsListView(ListView):
     ordering = "-year"
     paginate_by = 10
 
+
 class DriversListView(ListView):
     model = Drivers
     context_object_name = "drivers"
     template_name = "drivers_list.html"
     # paginate_by = 50
+
+
+def drivers_current(request):
+    context = {}
+
+    #kierowcy jezdzacy w aktualnym sezonie
+    try:
+        context["drivers"] = Drivers.objects.filter(
+            results__race__year=Seasons.get_current_season()).distinct().order_by("surname", "name")
+    except:
+        context["drivers"] = None
+
+    #pierwsze litery nazwisk kierowcow
+    try:
+        context["surname_letters"] = sorted([k.lower() for k in Drivers.objects.all().values_list(Substr("surname", 1, 1), flat=True).distinct()])
+    except:
+        context["surname_letters"] = None
+
+
+    return render(request, "drivers_list.html", context)
+
+
+def drivers_alphabetical(request, letter):
+    context = {}
+
+    context["letter"] = letter.lower()
+
+    try:
+        drivers = Drivers.objects.filter(Q(surname__startswith=letter) | Q(surname__startswith=letter.upper())).order_by("surname", "name")
+    except:
+        drivers = None
+
+    #pierwsze litery nazwisk kierowcow
+    try:
+        context["surname_letters"] = sorted([k.lower() for k in Drivers.objects.all().values_list(Substr("surname", 1, 1), flat=True).distinct()])
+    except:
+        context["surname_letters"] = None
+
+
+    paginator = Paginator(drivers, 20)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    context["drivers"] = page_obj
+
+
+    # return HttpResponse("Literka %s" % letter)
+    return render(request, "drivers_list.html", context)

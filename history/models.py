@@ -10,6 +10,8 @@ from django.db import models
 
 from datetime import datetime
 
+from django.db.models import Max
+
 
 class Drivers(models.Model):
     id = models.AutoField(db_column="driverId", primary_key=True)
@@ -288,6 +290,12 @@ class Seasons(models.Model):
         except Exception as e:
             return None  # if there were no races exception is raised
 
+    def get_current_season():
+        '''
+        Zwraca aktualny sezon(lub ten zakonczony, kiedy jeszcze nie mam informacji na temat wynikow aktualnego)
+        '''
+        return Races.objects.filter(results__isnull=False, date__lt=datetime.now()).aggregate(Max("year"))["year__max"]
+
 
 class Status(models.Model):
     id = models.AutoField(db_column="statusId", primary_key=True)
@@ -298,3 +306,4 @@ class Status(models.Model):
 
     class Meta:
         db_table = "status"
+
