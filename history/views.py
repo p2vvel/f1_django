@@ -1,4 +1,5 @@
 from datetime import datetime
+from history.forms import SearchForm
 from typing import List
 from django.http import request
 from django.http.response import Http404, HttpResponse
@@ -365,48 +366,94 @@ class SeasonsListView(ListView):
     paginate_by = 10
 
 
-class DriversListView(ListView):
-    model = Drivers
+class AlphabeticalSearchListView(ListView):
+    '''Klasa bazowa, zeby nie pisac dwa razy tego samego kodu dla widokow list kierowcow, torow i konstruktorow'''
     paginate_by = 20
-    template_name = "drivers_list.html"
-
-    # context_object_name = "drivers"
 
     def get_queryset(self):
         letter = self.request.GET.get("letter")
-        search = self.request.GET.get("search")
-        if search:
-            pass
+        search_query = self.request.GET.get("search")
+        if search_query:
+            return self.get_queryset_search(
+                search_query)  #przypadek kiedy user wpisal tekst do wyszukania
         elif letter:
-            try:
-                return Drivers.objects.filter(
-                    Q(surname__startswith=letter)
-                    | Q(surname__startswith=letter.upper())).order_by(
-                        "surname", "name")
-            except:
-                return None
+            return self.get_queryset_alphabetical(
+                letter)  #przypadek kiedy mam litere alfabetu
         else:
-            try:
-                return Drivers.objects.filter(
-                    results__race__year=Seasons.get_current_season()).distinct(
-                    ).order_by("surname", "name")
-            except Exception as e:
-                return None
-
-        return super().get_queryset()
-
+            return self.get_queryset_regular()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["letter"] = self.request.GET.get("letter")
 
-        #pierwsze litery nazwisk kierowcow
+        context["surname_letters"] = self.get_queryset_letters()
+        context["form"] = SearchForm()
+        return context
+
+
+class DriversListView(AlphabeticalSearchListView):
+    template_name = "drivers_list.html"
+
+    def get_queryset_alphabetical(self, letter):
+        '''Zwraca nazwiska kierowcow, ktorych nazwiska zaczynaja sie na podana litere'''
         try:
-            context["surname_letters"] = sorted([
+            return Drivers.objects.filter(
+                Q(surname__startswith=letter)
+                | Q(surname__startswith=letter.upper())).order_by(
+                    "surname", "name")
+        except:
+            return None
+
+    def get_queryset_regular(self):
+        '''Zwraca kierowcow ktorzy startuja w aktualnym sezonie'''
+        try:
+            return Drivers.objects.filter(
+                results__race__year=Seasons.get_current_season()).distinct(
+                ).order_by("surname", "name")
+        except Exception as e:
+            return None
+
+    def get_queryset_letters(self):
+        try:
+            return sorted([
                 k.lower() for k in Drivers.objects.all().values_list(
                     Substr("surname", 1, 1), flat=True).distinct()
             ])
         except:
-            context["surname_letters"] = None
+            return None
 
-        return context
+    def get_queryset_search(self, search_query):
+        return None
+
+class ConstructorsListView(AlphabeticalSearchListView):
+    template_name = "constructors_list.html"
+
+    def get_queryset_alphabetical(self, letter):
+        '''Zwraca nazwy konstruktorow, ktorych nazwy zaczynaja sie na podana litere'''
+        try:
+            return Constructors.objects.filter(
+                Q(name__startswith=letter)
+                | Q(name__startswith=letter.upper())).order_by("name")
+        except:
+            return None
+
+    def get_queryset_regular(self):
+        '''Zwraca konstruktorow, ktorzy startuja w aktualnym sezonie'''
+        try:
+            return Constructors.objects.filter(
+                results__race__year=Seasons.get_current_season()).distinct(
+                ).order_by("name")
+        except Exception as e:
+            return None
+
+    def get_queryset_letters(self):
+        try:
+            return sorted([
+                k.lower() for k in Constructors.objects.all().values_list(
+                    Substr("name", 1, 1), flat=True).distinct()
+            ])
+        except:
+            return None
+
+    def get_queryset_search(self, search_query):
+        return None

@@ -28,5 +28,6 @@ urlpatterns = [
     path("season/<int:pk>", views.SeasonView.as_view(), name="season_details"),
     path("seasons/", views.SeasonsListView.as_view(), name="seasons_list"),
     path("drivers/", views.DriversListView.as_view(), name="drivers_list"),
+    path("constructors/", views.ConstructorsListView.as_view(), name="constructors_list"),
     # re_path(r"drivers/alphabetical/(?P<letter>[a-zA-Z]{1})/", views.drivers_alphabetical, name="drivers_alphabetical"),
 ]
