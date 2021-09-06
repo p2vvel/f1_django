@@ -27,6 +27,6 @@ urlpatterns = [
     path("race/<int:pk>", views.RaceView.as_view(), name="race_details"),
     path("season/<int:pk>", views.SeasonView.as_view(), name="season_details"),
     path("seasons/", views.SeasonsListView.as_view(), name="seasons_list"),
-    path("drivers/", views.drivers_current, name="drivers_list"),
-    re_path(r"drivers/alphabetical/(?P<letter>[a-zA-Z]{1})/", views.drivers_alphabetical, name="drivers_alphabetical"),
+    path("drivers/", views.DriversListView.as_view(), name="drivers_list"),
+    # re_path(r"drivers/alphabetical/(?P<letter>[a-zA-Z]{1})/", views.drivers_alphabetical, name="drivers_alphabetical"),
 ]
