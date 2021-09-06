@@ -1,4 +1,6 @@
 from datetime import datetime
+from typing import List
+from django.http import request
 from django.http.response import Http404, HttpResponse
 from django.shortcuts import redirect, render
 from django.urls.base import reverse
@@ -15,7 +17,6 @@ from django.views.generic.list import ListView
 from django.db.models.functions import Substr
 
 from django.core.paginator import Paginator
-
 
 
 def index(request):
@@ -355,6 +356,7 @@ class SeasonView(DetailView):
 
         return context
 
+
 class SeasonsListView(ListView):
     model = Seasons
     context_object_name = "seasons"
@@ -365,54 +367,46 @@ class SeasonsListView(ListView):
 
 class DriversListView(ListView):
     model = Drivers
-    context_object_name = "drivers"
+    paginate_by = 20
     template_name = "drivers_list.html"
-    # paginate_by = 50
+
+    # context_object_name = "drivers"
+
+    def get_queryset(self):
+        letter = self.request.GET.get("letter")
+        search = self.request.GET.get("search")
+        if search:
+            pass
+        elif letter:
+            try:
+                return Drivers.objects.filter(
+                    Q(surname__startswith=letter)
+                    | Q(surname__startswith=letter.upper())).order_by(
+                        "surname", "name")
+            except:
+                return None
+        else:
+            try:
+                return Drivers.objects.filter(
+                    results__race__year=Seasons.get_current_season()).distinct(
+                    ).order_by("surname", "name")
+            except Exception as e:
+                return None
+
+        return super().get_queryset()
 
 
-def drivers_current(request):
-    context = {}
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["letter"] = self.request.GET.get("letter")
 
-    #kierowcy jezdzacy w aktualnym sezonie
-    try:
-        context["drivers"] = Drivers.objects.filter(
-            results__race__year=Seasons.get_current_season()).distinct().order_by("surname", "name")
-    except:
-        context["drivers"] = None
+        #pierwsze litery nazwisk kierowcow
+        try:
+            context["surname_letters"] = sorted([
+                k.lower() for k in Drivers.objects.all().values_list(
+                    Substr("surname", 1, 1), flat=True).distinct()
+            ])
+        except:
+            context["surname_letters"] = None
 
-    #pierwsze litery nazwisk kierowcow
-    try:
-        context["surname_letters"] = sorted([k.lower() for k in Drivers.objects.all().values_list(Substr("surname", 1, 1), flat=True).distinct()])
-    except:
-        context["surname_letters"] = None
-
-
-    return render(request, "drivers_list.html", context)
-
-
-def drivers_alphabetical(request, letter):
-    context = {}
-
-    context["letter"] = letter.lower()
-
-    try:
-        drivers = Drivers.objects.filter(Q(surname__startswith=letter) | Q(surname__startswith=letter.upper())).order_by("surname", "name")
-    except:
-        drivers = None
-
-    #pierwsze litery nazwisk kierowcow
-    try:
-        context["surname_letters"] = sorted([k.lower() for k in Drivers.objects.all().values_list(Substr("surname", 1, 1), flat=True).distinct()])
-    except:
-        context["surname_letters"] = None
-
-
-    paginator = Paginator(drivers, 20)
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
-
-    context["drivers"] = page_obj
-
-
-    # return HttpResponse("Literka %s" % letter)
-    return render(request, "drivers_list.html", context)
+        return context
