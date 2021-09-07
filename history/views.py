@@ -1,7 +1,5 @@
 from datetime import datetime
 from history.forms import SearchForm
-from typing import List
-from django.http import request
 from django.http.response import Http404, HttpResponse
 from django.shortcuts import redirect, render
 from django.urls.base import reverse
@@ -13,11 +11,11 @@ from .models import Circuits, Constructors, Constructorstandings, Drivers, Drive
 
 from .utils import group_elements, fill_empty_races
 
-from django.db.models import Min, Q
+from django.db.models import Min, Q, Value
 from django.views.generic.list import ListView
 from django.db.models.functions import Substr
 
-from django.core.paginator import Paginator
+from django.db.models.functions import Concat
 
 
 def index(request):
@@ -372,7 +370,8 @@ class AlphabeticalSearchListView(ListView):
 
     def get_queryset(self):
         letter = self.request.GET.get("letter")
-        search_query = self.request.GET.get("search")
+        search_query = self.request.GET.get("search_query")
+
         if search_query:
             return self.get_queryset_search(
                 search_query)  #przypadek kiedy user wpisal tekst do wyszukania
@@ -385,9 +384,10 @@ class AlphabeticalSearchListView(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["letter"] = self.request.GET.get("letter")
+        context["search_query"] = self.request.GET.get("search_query")
 
-        context["surname_letters"] = self.get_queryset_letters()
-        context["form"] = SearchForm()
+        context["available_letters"] = self.get_queryset_letters()
+        context["form"] = SearchForm(self.request.GET)
         return context
 
 
@@ -398,9 +398,7 @@ class DriversListView(AlphabeticalSearchListView):
         '''Zwraca nazwiska kierowcow, ktorych nazwiska zaczynaja sie na podana litere'''
         try:
             return Drivers.objects.filter(
-                Q(surname__startswith=letter)
-                | Q(surname__startswith=letter.upper())).order_by(
-                    "surname", "name")
+                surname__istartswith=letter).order_by("surname", "name")
         except:
             return None
 
@@ -423,7 +421,14 @@ class DriversListView(AlphabeticalSearchListView):
             return None
 
     def get_queryset_search(self, search_query):
-        return None
+        try:
+            return Drivers.objects.annotate(
+                fullname=Concat("name", Value(" "), "surname")).filter(
+                    fullname__icontains=search_query)
+        except Exception as e:
+            print("ERROR: %s" % e)
+            return None
+
 
 class ConstructorsListView(AlphabeticalSearchListView):
     template_name = "constructors_list.html"
@@ -432,8 +437,7 @@ class ConstructorsListView(AlphabeticalSearchListView):
         '''Zwraca nazwy konstruktorow, ktorych nazwy zaczynaja sie na podana litere'''
         try:
             return Constructors.objects.filter(
-                Q(name__startswith=letter)
-                | Q(name__startswith=letter.upper())).order_by("name")
+                name__istartswith=letter).order_by("name")
         except:
             return None
 
@@ -456,4 +460,44 @@ class ConstructorsListView(AlphabeticalSearchListView):
             return None
 
     def get_queryset_search(self, search_query):
-        return None
+        try:
+            return Constructors.objects.filter(name__icontains=search_query)
+        except:
+            return None
+
+
+class CircuitsListView(AlphabeticalSearchListView):
+    template_name = "circuits_list.html"
+
+    def get_queryset_alphabetical(self, letter):
+        '''Zwraca tory, ktorych nazwy zaczynaja sie na podana litere'''
+        try:
+            return Circuits.objects.filter(
+                name__istartswith=letter).order_by("name")
+        except:
+            return None
+
+    def get_queryset_regular(self):
+        '''Zwraca tory, na ktorych odbywaja sie w wyscigi w aktualnym sezonie'''
+        try:
+            return Circuits.objects.filter(
+                races__year=Seasons.get_current_season()).distinct().order_by(
+                    "name")
+        except:
+            return None
+
+    def get_queryset_letters(self):
+        '''Zwraca pierwsze litery nazw torow'''
+        try:
+            return sorted([
+                k.lower() for k in Circuits.objects.all().values_list(
+                    Substr("name", 1, 1), flat=True).distinct()
+            ])
+        except:
+            return None
+
+    def get_queryset_search(self, search_query):
+        try:
+            return Circuits.objects.filter(name__icontains=search_query)
+        except:
+            return None
