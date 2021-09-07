@@ -81,27 +81,6 @@ class DriverView(generic.DetailView):
         except Exception as e:
             context["teams"] = None
 
-        #licze ilosc wygranych
-        try:
-            temp = Results.objects\
-                .filter(driver=my_driver, position=1)\
-                .count()
-            context["wins"] = temp
-        except Exception as e:
-            context["wins"] = None
-
-        #licze ilosc pole position
-        try:
-            #sprawdzanie po miejscach w kwalifikacjach dalo wyniki odmienne od tych ktore sa wszedzie prezentowane
-            #przykladowo alonso w 2007 na wegrzech pomimo wykrecenia najszybszego kolka (w teorii zdobyciu pp),
-            #dostal kare 5 pozycji za blokowanie hamiltona, dlatego nie zdobyl pole position, wybrana opcja daje lepsze wyniki,
-            #np. w przypadku leclerca (sporne monaco 2021 - wypadek po zdobyciu pp) wyniki zgadzaja sie z historycznymi z innych zrodel
-            temp = Results.objects\
-                    .filter(driver=my_driver, grid=1)\
-                    .count()
-            context["pole_positions"] = temp
-        except Exception as e:
-            context["pole_positions"] = None
 
         #informacje o podiach
         try:

@@ -2,60 +2,85 @@
 
 {% block content %}
 
-{% if driver.wiki_url %}
-    <h3><a href="{{driver.wiki_url}}">{{driver.name}} {{driver.surname}}</a></h3>
-{% else %}
-    <h3>{{driver.name}} {{driver.surname}}</h3>
-{% endif %}
-
-{% if driver.code %}
-    <p>Code: {{driver.code}}</p>
-{% endif %}
-{% if driver.number %}
-    <p>Number: {{driver.number}}</p>
-{% endif %}
-{% if driver.birthday %}
-    <p>Birthday: {{driver.birthday}}</p>
-{% endif %}
-
-{% if driver.nationality %}
-    <p>Nationality: {{driver.nationality}} </p>
-{% endif %}
+<div class="row">
+<div class="col-12 col-lg-6 my-2">
+    <div class="card h-100">
+        <div class="card-body">
+                <h4 class="card-title">{{driver.name}} {{driver.surname}}</h4>
+            
+            <h6 class="card-subtitle mb-2 text-muted">
+                {% if driver.code %}{{driver.code}}{% endif %}
+                {% if driver.number %}{{driver.number}}{% endif %}
+            </h6>
 
 
-{% if races_count %}
-    <p>Races: {{races_count}}</p>
-{% endif %}
+            {% if driver.birthday %}
+                <p>Birthday: {{driver.birthday}}</p>
+            {% endif %}
+
+            {% if driver.nationality %}
+                <p>Nationality: {{driver.nationality}} </p>
+            {% endif %}
+
+            <a href="{{driver.wiki_url}}" class="card-link">Wiki</a>
+        </div>
+    </div>
+</div>
+<div class="col-12  col-lg-6 my-2">
+    <div class="card h-100">
+        <div class="card-body">
+            <h4 class="card-title">Sport stats</h4>
 
 
-{% if highest_position %}
-    <p>Highest race finish: {{highest_position.position}} (x {{highest_position.count}})</p>
-{% endif %}
+            {% comment %} <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p> {% endcomment %}
 
-{% if highest_grid %}
-    <p>Highest grid position: {{highest_grid.grid}} (x {{highest_grid.count}})</p>
-{% endif %}
+            {% if races_count %}
+                <p>Races: {{races_count}}</p>
+            {% endif %}
 
 
-{% if wins %}
-    <p>Wins: {{wins}}</p>
-{% endif %}
-{% if podiums %}
-    <p>Podiums: {{podiums}}</p>
-{% endif %}
-
-{% if pole_positions %}
-    <p>Pole positions: {{pole_positions}}</p>
-{% endif %}
+            {% if highest_position %}
+                <p>Highest race finish: {{highest_position.position}} (x {{highest_position.count}})</p>
+            {% endif %}
 
 
-{% if first_race %}
-    <p>First race: <a href={% url 'history:race_details' pk=first_race.pk %}>{{first_race.year}} {{first_race.name}}</a></p> 
-{% endif %}
+            {% if highest_grid %}
+                <p>Highest grid position: {{highest_grid.grid}} (x {{highest_grid.count}})</p>
+            {% endif %}
 
-{% if last_race %}
-    <p>First race: <a href={% url 'history:race_details' pk=last_race.pk %}>{{last_race.year}} {{last_race.name}}</a></p> 
-{% endif %}
+
+            {% if podiums and highest_position and highest_position.position < 3 %}
+                <p>Podiums: {{podiums}}</p>
+            {% endif %}
+
+
+            <table class="w-100">
+            <tr>
+                {% if first_race %}
+                    <th>First race</th>
+                {% endif %}
+                {% if last_race %}
+                    <th class="text-end">Last race</th>
+                {% endif %}
+            </tr>
+            <tr>
+                {% if first_race %}
+                    <td><a  class="card-link" href={% url 'history:race_details' pk=first_race.pk %}>{{first_race.year}} {{first_race.name}}</a></td>
+                {% endif %}
+                {% if last_race %}
+                    <td class="text-end"><a class="card-link" href={% url 'history:race_details' pk=last_race.pk %}>{{last_race.year}} {{last_race.name}}</a></td>
+                {% endif %}
+            </tr>
+            </table>
+        </div>
+    </div>
+</div>
+</div>
+
+
+
+
+
 
 {% if related_drivers %}
 <h3>Related drivers:</h3>
