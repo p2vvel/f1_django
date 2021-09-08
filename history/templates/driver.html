@@ -6,14 +6,14 @@
 <div class="col-12 col-lg-6 my-2">
     <div class="card h-100">
         <div class="card-body">
-                <h4 class="card-title">{{driver.name}} {{driver.surname}}</h4>
+            <h3 class="card-title">{{driver.name}} {{driver.surname}}</h3>
             
-            <h6 class="card-subtitle mb-2 text-muted">
+            <h6 class="card-subtitle mb-4 text-muted">
                 {% if driver.code %}{{driver.code}}{% endif %}
                 {% if driver.number %}{{driver.number}}{% endif %}
             </h6>
 
-
+            
             {% if driver.birthday %}
                 <p>Birthday: {{driver.birthday}}</p>
             {% endif %}
@@ -21,7 +21,7 @@
             {% if driver.nationality %}
                 <p>Nationality: {{driver.nationality}} </p>
             {% endif %}
-
+            
             <a href="{{driver.wiki_url}}" class="card-link">Wiki</a>
         </div>
     </div>
@@ -82,18 +82,6 @@
 
 
 
-{% if related_drivers %}
-<h3>Related drivers:</h3>
-<ul>
-{% for k in related_drivers %}
-    <li>
-        <a href= {% url 'history:driver_details' nick=k.nickname %}>
-            {{k.name}} {{k.surname}}
-        </a>
-    </li>
-{% endfor %}
-</ul>
-{%endif%}
 
 
 {%if teams %}
@@ -107,14 +95,14 @@
         <th>Teams</th>
 
     </tr>
-    {% for year, teams in  teams %}
+    {% for year, tm in  teams %}
     <tr>
         <td>
-            {{year}}
+            <a href={% url "history:season_details" pk=year %} >{{year}}</a>
         </td>
         <td class="p-0"> 
             <ul class="list-group list-group-flush">
-                {% for k in teams %}
+                {% for k in tm %}
                     <li class="list-group-item">
                         <a href = {% url 'history:constructor_details' nick=k.nickname %}>{{k.name}}</a> 
                     </li>
@@ -127,6 +115,21 @@
 </div>
 </div>
 {% endif %}
+
+
+
+{% if related_drivers %}
+<h3>Related drivers:</h3>
+<ul>
+{% for k in related_drivers %}
+    <li>
+        <a href= {% url 'history:driver_details' nick=k.nickname %}>
+            {{k.name}} {{k.surname}}
+        </a>
+    </li>
+{% endfor %}
+</ul>
+{%endif%}
 
 
 {% endblock content %}

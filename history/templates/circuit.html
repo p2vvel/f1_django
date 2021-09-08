@@ -3,23 +3,72 @@
 
 {% block content %}
 
-<h3>{{circuit}}</h3>
+
+<div class="row">
+<div class="col-12 col-lg-6 my-2">
+    <div class="card h-100">
+        <div class="card-body">
+            <h3 class="card-title">{{circuit}}</h3>
+            
+            <h6 class="card-subtitle mb-4 text-muted">
+                {% if driver.code %}{{driver.code}}{% endif %}
+                {% if driver.number %}{{driver.number}}{% endif %}
+            </h6>
+
+            
+            {% if circuit.country %}
+                <p>Country: {{circuit.country}}</p>
+            {% endif %}
+            
+            {% if circuit.location %}
+                {% if circuit.lat and circuit.lng  %}
+                    <p>Location: <span data-bs-toggle="tooltip" data-bs-placement="right" title="Lat: {{circuit.lat}}, Lng:{{circuit.lng}}">{{circuit.location}}</span></p>
+                {% endif %}
+            {% endif %}
+
+            {% if circuit.alt %}
+                <p>Altitude: {{circuit.alt}} [m]</p>
+            {% endif %}
+           
+            
+            <a href="{{circuit.wiki_url}}" class="card-link">Wiki</a>
+        </div>
+    </div>
+</div>
+</div>
+
+
 
 {% if races %}
-    <ul>
-    {% for year, races_ in races %}
-        <li>
-            {{year}}
-            {% for race in races_ %}
-                {% if forloop.last %}
-                    <a href={% url 'history:race_details' pk=race.pk %}>{{race}}</a>
-                {% else %}
-                    <a href={% url 'history:race_details' pk=race.pk %}>{{race}}</a>,
-                {% endif %}
-            {% endfor %}
-        </li>
+<div class="row">
+<div class="col">
+<table class="table table-hover table-bordered">
+    <tr class="table-secondary ">
+        <th>Year</th>
+        <th>Races</th>
+
+    </tr>
+    {% for year, rc in races %}
+    <tr>
+        <td>
+            <a href={% url "history:season_details" pk=year %} >{{year}}</a>
+        </td>
+        <td class="p-0"> 
+            <ul class="list-group list-group-flush">
+                {% for k in rc %}
+                    <li class="list-group-item">
+                        <a href={% url 'history:race_details' pk=k.pk %}>{{k}}</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </td>
+    </tr>
     {% endfor %}
-    </ul>
+</table>
+</div>
+</div>
 {% endif %}
+
+
 
 {% endblock content %}

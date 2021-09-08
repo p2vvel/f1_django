@@ -3,20 +3,44 @@
 
 {% block content %}
 
-<h3>{{constructor}}</h3>
+<div class="row">
+<div class="col-12 col-lg-6 my-2">
+    <div class="card h-100">
+        <div class="card-body">
+            <h3 class="card-title">{{constructor}}</h3>
+            
+            <h6 class="card-subtitle mb-4 text-muted">
+                {% if driver.code %}{{driver.code}}{% endif %}
+                {% if driver.number %}{{driver.number}}{% endif %}
+            </h6>
 
-{% if races_count %}
-    <p>Races: {{races_count}}</p>
-{% endif %}
+            
+            {% if races_count %}
+                <p>Races: {{races_count}}</p>
+            {% endif %}
+
+            {% if highest_grid %}
+                <p>Highest starting position: {{highest_grid.grid}} (x{{highest_grid.count}})</p>
+            {% endif %}
+
+            {% if highest_position %}
+                <p>Highest race position: {{highest_position.position}} (x{{highest_position.count}})</p>
+            {% endif %}
+            
+            <a href="{{driver.wiki_url}}" class="card-link">Wiki</a>
+        </div>
+    </div>
+</div>
+</div>
 
 
-{% if highest_grid %}
-    <p>Highest starting position: {{highest_grid.grid}} (x{{highest_grid.count}})</p>
-{% endif %}
 
-{% if highest_position %}
-    <p>Highest race position: {{highest_position.position}} (x{{highest_position.count}})</p>
-{% endif %}
+<h3></h3>
+
+
+
+
+
 
 
 {% if drivers %}
@@ -29,7 +53,7 @@
     {% for year, drivers in drivers %}
         <tr>
             <td>
-                {{year}}
+                <a href={% url "history:season_details" pk=year %} >{{year}}</a>
             </td>
             <td class="p-0">
                 <ul class="list-group list-group-flush">

@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+
+{% load my_tags %}
+
+{% block content %}
+
+
+<div class="row">
+<div class="col">
+
+
+
+
+
+<h2>{% block page_title %}{% endblock page_title %}</h2>
+
+
+
+
+<div class="row my-5">
+<div class="col d-flex justify-content-between flex-wrap">
+  <div class="flex-grow-1">
+    <ul class="pagination d-flex flex-wrap justify-content-center">
+    {% if letter is none and search_query is none %}
+        <li class="page-item active"><a class="page-link" href={{request.path}}>Current</a></li>
+    {% else %}
+        <li class="page-item"><a class="page-link" href={{request.path}}>Current</a></li>
+    {% endif %}
+
+    {% for l in available_letters %}
+        {% if l == letter or l|upper == letter %}
+            {% if search_query is none %}
+                <li class="page-item active"><a class="page-link" href="?letter={{l}}">{{l|upper}}</a></li>
+            {% endif %}
+        {% else %}
+            <li class="page-item"><a class="page-link" href="?letter={{l}}">{{l|upper}}</a></li>
+        {% endif %}
+    {% endfor %}
+    </ul>
+  </div>
+  <div class="d-flex flex-grow-1 justify-content-center align-items-start">
+    <form class="d-flex mx-auto" method="GET" action="">
+        {{form.search_query}}
+      <button class="btn btn-outline-secondary ms-2" type="submit">Search</button>
+    </form>
+  </div>
+</div>
+</div>
+
+
+
+{% block objects_list %}
+{% endblock objects_list %}
+
+
+
+
+{% if page_obj.paginator and page_obj.paginator.num_pages > 1 %}
+    <div class="row">
+    <div class="col d-flex justify-content-center my-3">
+        <nav aria-label="Page navigation example">
+        <ul class="pagination">
+            <li class="page-item"><a class="page-link" href="?{% preserve_parameters_url page=1 %}">First</a></li>
+            
+            {% for i in page_obj.paginator.page_range %}
+                {% if i == page_obj.number  %}
+                    <li class="page-item active"><a class="page-link" href="?{% preserve_parameters_url page=i %}">{{i}}</a></li>
+                {% elif i >= page_obj.number|add:-3 and i <= page_obj.number|add:3%}
+                    <li class="page-item"><a class="page-link" href="?{% preserve_parameters_url page=i %}">{{i}}</a></li>
+                {% endif %}
+            {% endfor %}
+            <li class="page-item"><a class="page-link" href="?{% preserve_parameters_url page=page_obj.paginator.num_pages %}">Last</a></li>
+        </ul>
+        </nav>
+    </div>
+    </div> 
+{% endif %}
+
+</div>
+</div>
+
+{% endblock content %}
