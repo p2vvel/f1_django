@@ -9,4 +9,4 @@ TODO:
 * code cleanup
 * app containerization
 * db container cleanup
-* script for fetching current data from ergast website 
+* script for fetching current data from Ergast website 
