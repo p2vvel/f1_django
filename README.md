@@ -7,6 +7,6 @@ Uses Ergast database: http://ergast.com/mrd/
 
 TODO:
 * code cleanup
-* app contenerization
+* app containerization
 * db container cleanup
 * script for fetching current data from ergast website 
